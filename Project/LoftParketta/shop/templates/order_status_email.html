@@ -1,0 +1,22 @@
+{% block content %}
+ <h1>Rendelés Állapot Frissítés</h1>
+    <p>Kedves {{ username }},</p>
+
+    <p>A rendelésed státusza frissült: <strong>{{ order.get_status_display }}</strong></p>
+
+    <h3>Rendelési információk:</h3>
+    <p><strong>Rendelés azonosító:</strong> {{ order.id }}</p>
+    <p><strong>Összeg:</strong> {{ order.total_amount }} HUF</p>
+    <p><strong>Szállítási cím:</strong> {{ order.shipping_address.recipient_name }}, {{ order.shipping_address.address_line1 }}, {{ order.shipping_address.city }}, {{ order.shipping_address.postal_code }}, {{ order.shipping_address.country }}</p>
+
+    <h3>Kosár tartalma:</h3>
+    <ul>
+        {% for item in cart_items %}
+            <li>{{ item.product.name }} - Mennyiség: {{ item.quantity }} - Ár: {{ item.total_price| floatformat:0 }} HUF</li>
+        {% endfor %}
+    </ul>
+
+    <p>A rendelésed állapotát itt tudod megtekinteni: <a href="{{ status_url }}">Rendelés státuszának megtekintése</a></p>
+
+    <p>Köszönjük a vásárlást!</p>
+{% endblock %}

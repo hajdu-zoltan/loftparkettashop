@@ -1,0 +1,1 @@
+SELECT id, title, price, category_id, short_desc, content, image_id, brand_id, deleted_at FROM produloftpark_designncts WHERE deleted_at IS NULLproducts

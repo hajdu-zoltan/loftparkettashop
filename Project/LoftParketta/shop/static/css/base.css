@@ -1,0 +1,81 @@
+body{
+background: #EFF6EE !important;
+}
+
+.info-bar {
+      background-color: rgba(221, 4, 38, 1);
+      padding: 5px 0;
+      text-align: left;
+    }
+    .info-bar a {
+      color: #ffff;
+      text-decoration: none;
+      margin-right: 15px;
+    }
+     .info-item {
+      display: flex;
+      align-items: center;
+    }
+    .info-item img {
+      margin-right: 5px;
+    }
+
+.my_navbar{
+    background-color: rgba(255, 255, 255, 1) !important;
+
+}
+
+.active{
+  color: #F02D3A !important;
+  
+}
+
+.nav-item{
+  font-size: 1.5rem;
+}
+
+.myfooter{
+  background-color: #3B4454;
+  color: #ffff !important;
+}
+
+.text-white {
+  color: #ffff !important;
+}
+
+.subscribe-card {
+  background-color: #B3BBBB;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  text-align: center;
+  transition: transform 0.3s;
+  position: relative;
+  z-index: 10;
+  margin-top: -100px;
+}
+.subscribe-card:hover {
+  transform: translateY(-10px);
+}
+.subscribe-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+.subscribe-input {
+  border-radius: 50px !important;
+  padding: 10px 20px !important;
+  width: calc(100% - 60px);
+}
+
+.subscribe-button {
+  border-radius: 50px !important;
+  padding: 10px 20px !important;
+  margin-top: 20px !important;
+  background-color: #17AF26 !important;
+  color: white !important;
+  transition: background-color 0.3s !important;
+}
+.subscribe-button:hover {
+  background-color: #0056b3;
+}

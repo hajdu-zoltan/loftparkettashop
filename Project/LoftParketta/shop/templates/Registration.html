@@ -1,0 +1,93 @@
+
+{% extends 'base.html' %}
+
+
+{% load crispy_forms_tags %}         
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+<!--Register--> 
+
+{% block content %}
+    {% if  warning is not None %}
+      <script>
+        alert('{{ warning }}');
+      </script>
+    {% endif %}
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <form method="POST">
+        {% csrf_token %}
+        <section class=" gradient-custom"  style="margin-bottom: 50px;">
+            <div class="container py-5">
+              <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col-md-01 col-lg-6 col-xl-6">
+                  <div class="card text-white card-dark-bg" style="border-radius: 1rem;">
+                    <div class="card-body p-4 text-center">
+          
+                      <div class="mb-md-3 mt-md-2 pb-2">
+          
+                        <h2 class="fw-bold mb-2 text-uppercase">Regisztráció</h2>
+                        <p class="text-white-70 mb-5">Kérlek add meg a szükséges adatokat!</p>
+                        <div>
+                          {% if messages %}
+                            {% for message in messages %}
+                              {{message}}
+                            {% endfor %}
+                          {% endif %}
+                        </div>
+                        <div class="form-outline form-white mb-4">
+                          {{form.username}}
+                          <label class="form-label" for="typeName">Felhasználónév</label>
+                        </div>
+                        
+                        <div class="row">
+                          <div class="form-outline form-white col-md-01 col-lg-6 col-xl-6">
+                            {{form.last_name}}
+                            <label class="form-label" for="typeName">Vezetéknév</label>
+                          </div>
+                          <div class="form-outline form-white col-md-01 col-lg-6 col-xl-6">
+                            {{form.first_name}}
+                            <label class="form-label" for="typeName">Keresztnév</label>
+                          </div>
+                        </div>
+                        
+                        <div class="form-outline form-white mb-4">
+                          {{form.email}}
+                          <label class="form-label" for="typeEmailX">E-mail-cím</label>
+                        </div>
+          
+                        <div class="form-outline form-white mb-4">
+                          {{form.password1}}
+                          <label class="form-label" for="typePasswordX">Jelszó</label>
+                        </div>
+        
+                        <div class="form-outline form-white mb-4">
+                          {{form.password2}}
+                          <label class="form-label" for="typePasswordX">Jelszó ellenőrzés</label>
+                        </div>
+        
+                        
+                        <div class="row">
+                          <div class ="col-md-01 col-lg-2 col-xl-2"></div>
+                          <div class="col-md-01 col-lg-8 col-xl-8">
+                              <div class="g-recaptcha" data-sitekey="6LdLXOMiAAAAAIrk7xvnfv0xo0oyU7kmcIv4zY2Z"></div>
+                          </div>
+                          <div class ="col-md-01 col-lg-2 col-xl-2"></div>
+                        </div>
+                        <br/>
+                    
+                        <input class="btn btn-outline-light btn-lg px-5 btn_login" name='register' type="submit" value="Regisztráció"></button>
+          
+                      </div>
+          
+                      <div>
+                        <p class="mb-0">Már van fiókod? <a href="{% url 'Login' %}" class="text-white-50 fw-bold">Bejelentkezés</a>
+                        </p>
+                      </div>
+          
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+    </form>
+  {% endblock content %}  

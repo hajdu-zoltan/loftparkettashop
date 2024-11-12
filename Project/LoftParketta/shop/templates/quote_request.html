@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-header">
+            <h3>Árajánlat kérése</h3>
+        </div>
+        <div class="card-body">
+           <form action="{% url 'shopping_cart:quote_request' %}" method="POST">
+    {% csrf_token %}
+
+    <!-- Választási lehetőség: kosárból vagy egyedi termék -->
+    <div class="form-group">
+        <label for="request-type">Válaszd ki, mit szeretnél:</label>
+        <select name="request_type" id="request-type" class="form-control" onchange="toggleCustomProductFields(this.value)">
+            <option value="cart">Kosárban lévő termékekről kérek árajánlatot</option>
+            <option value="custom">Egyedi termékről kérek árajánlatot</option>
+        </select>
+        {% if form.request_type.errors %}
+            <div class="text-danger">{{ form.request_type.errors }}</div>
+        {% endif %}
+    </div>
+     <!-- Kosár termékeinek megjelenítése (amikor kosár opció van kiválasztva) -->
+                <div id="cart-items-section" class="form-group mt-3">
+                    <h4>Kosárban lévő termékek</h4>
+                    <ul class="list-group">
+                        {% for item in cart_items %}
+                            {% if forloop.counter <= 3 %}
+                                <a class="nav-link" href="{% url 'shop:product_detail' item.product.id %}" target="_blank">
+                                    <li class="list-group-item">
+                                        <img src="{{ item.product.image.url }}" class="img-thumbnail mr-3" alt="{{ item.product.name }}" style="width: 50px; height: 50px;">
+                                        {{ item.product.name }} - {{ item.quantity }} db - {{ item.discounted_price }} Ft
+                                    </li>
+                                </a>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                    {% if cart_items|length > 3 %}
+                        <button class="btn btn-info mt-3" type="button" data-bs-toggle="collapse" data-bs-target="#extra-products" aria-expanded="false" aria-controls="extra-products">
+                            További termékek megjelenítése
+                        </button>
+                        <div class="collapse" id="extra-products">
+                            <ul class="list-group mt-2">
+                                {% for item in cart_items %}
+                                    {% if forloop.counter > 3 %}
+                                        <a class="nav-link" href="{% url 'shop:product_detail' item.product.id %}" target="_blank">
+
+                                            <li class="list-group-item">
+                                                <img src="{{ item.product.image.url }}" class="img-thumbnail mr-3" alt="{{ item.product.name }}" style="width: 50px; height: 50px;">
+                                                {{ item.product.name }} - {{ item.quantity }} db - {{ item.discounted_price }} Ft
+                                            </li>
+                                        </a>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                </div>
+
+    <!-- Egyedi termék megadásának mezői -->
+    <div id="custom-product-section" class="form-group mt-3" style="display: none;">
+        <h4>Egyedi termék megadása</h4>
+        <div class="form-group">
+            <label for="custom-product-name">Termék neve:</label>
+            <input type="text" id="custom-product-name" name="custom_product_name" class="form-control">
+            {% if form.custom_product_name.errors %}
+                <div class="text-danger">{{ form.custom_product_name.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="custom-product-description">Termék leírása:</label>
+            <textarea id="custom-product-description" name="custom_product_description" class="form-control"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="custom-product-quantity">Mennyiség:</label>
+            <input type="number" id="custom-product-quantity" name="custom_product_quantity" class="form-control" min="1">
+            {% if form.custom_product_quantity.errors %}
+                <div class="text-danger">{{ form.custom_product_quantity.errors }}</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Kapcsolati adatok -->
+    <div class="form-row mt-4">
+        <div class="form-group col-md-6">
+            <label for="name">Név:</label>
+            <input type="text" id="name" name="name" class="form-control" required>
+        </div>
+        <div class="form-group col-md-6">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" class="form-control" required>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label for="phone">Telefonszám:</label>
+            <input type="tel" id="phone" name="phone" class="form-control" required>
+        </div>
+    </div>
+
+    <!-- Üzenet (ha van) -->
+    <div class="form-group mt-4">
+        <label for="message">Üzenet:</label>
+        <textarea id="message" name="message" class="form-control"></textarea>
+    </div>
+
+    <!-- Beküldés -->
+    <button type="submit" class="btn btn-primary mt-4">Árajánlat kérése</button>
+</form>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleCustomProductFields(value) {
+        var customSection = document.getElementById('custom-product-section');
+        var cartSection = document.getElementById('cart-items-section');
+
+        if (value === 'custom') {
+            customSection.style.display = 'block';
+            cartSection.style.display = 'none';
+        } else {
+            customSection.style.display = 'none';
+            cartSection.style.display = 'block';
+        }
+    }
+</script>
+
+{% endblock %}

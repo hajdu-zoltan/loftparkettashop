@@ -1,0 +1,143 @@
+
+.card-text:last-child {
+    margin-bottom: 10px !important;
+}
+.news-content {
+    width: 100%;
+    text-align: right; /* Jobbra igazítja a szöveget */
+}
+
+.card-title {
+    margin-bottom: 0.5rem;
+    font-size: 2vh;
+}
+
+.price-container {
+    margin-bottom: 0.5rem;
+}
+
+.original-price {
+    text-decoration: line-through;
+    color: red;
+    margin-bottom: 0.5rem;
+    font-size: 3vh;
+}
+
+.discounted-price {
+    color: green;
+   font-size: 5vh;
+    font-weight: bold;
+}
+
+.btn {
+    margin-top: 0.5rem; /* Kis távolság a gomb fölött */
+    background-color: #F02D3A;
+     font-size: 3vh;
+}
+
+.discount-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: red;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 1.2rem;
+}
+
+
+.description {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-height: 4.5em; /* Adjust based on line height */
+}
+
+.description.expanded {
+    -webkit-line-clamp: unset;
+    max-height: none;
+}
+
+.read-more-icon {
+    font-size: 24px;
+    text-align: center;
+    margin: 10px 0;
+    display: none; /* Hide by default, show via JS if needed */
+}
+
+.card-body .description + .read-more-icon {
+    display: block;
+}
+
+.read-more-icon.up {
+    transform: rotate(180deg);
+}
+
+.info-card{
+    background-repeat: no-repeat !important;
+    background-position: center, 0 0, right bottom;
+    background-size: contain;
+    background-color: #c5bfbf !important;
+    height: 300px !important;
+}
+.info-card-image{
+    width: 90%;
+    height: 300px;
+    overflow: hidden;
+    position: relative;
+    margin: auto;
+}
+
+.info-card-image-image{
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Ensure image fits within the container */
+    object-position: center;
+}
+
+.info-card-text{
+    background-color: #b3aaaa;
+}
+
+.infocard {
+    border: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+    border-radius: 10px;
+    overflow: hidden;
+}
+.infocard:hover {
+    transform: translateY(-10px);
+}
+.infocard img {
+    border-radius: 10px 0 0 10px;
+    object-fit: cover;
+    height: 100%;
+}
+.infocard-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+.infocard-body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+.infocard-content {
+    padding: 20px;
+}
+
+.swiper-slide {
+    padding: 0 10px; /* Hézag a kártyák között */
+}
+
+.top_product_btn{
+    background-color: #ffffff00 !important;
+    color: #000 !important;
+    /* background-color: #1111110a; */
+    border-color: #000000 !important;
+}

@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load socialaccount %}
+{% block content %}
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <form method="POST">
+        {% csrf_token %}
+        <section class=" gradient-custom"  style="margin-bottom: 50px;">
+            <div class="container py-5">
+                <div class="row d-flex justify-content-center align-items-center h-100">
+                    <div class="col-md-12 col-lg-6 col-xl-6">
+                        <div class="card text-white card-dark-bg" style="border-radius: 1rem;">
+                            <div class="card-body p-4 text-center">
+                                <div class="mb-md-5 mt-md-2 pb-2">
+                                    <h2 class="fw-bold mb-2 text-uppercase">bejelentkezés</h2>
+                                    <p class="text-white-70 mb-5">Kérlek add meg a felhasználónév és jelszavadat!</p>
+                                    <div>
+
+                                      </div>
+                                    <div class="form-outline form-white mb-4">
+                                        <input type="text" name="username" id="typeEmailX" class="form-control form-control-lg" />
+                                        <label class="form-label" for="typeEmailX">Felhasználónév</label>
+                                    </div>
+                                    <div class="form-outline form-white mb-4">
+                                        <input type="password" name="password" id="typePasswordX" class="form-control form-control-lg" />
+                                        <label class="form-label" for="typePasswordX">Jelszó</label>
+                                        <p class="small mb-5 pb-lg-2"><a class="text-white-50" href="{% url 'password_reset' %}">Elfelejtetted a jelszavadat?</a></p>
+                                        
+                                    </div>
+                                    <div class="row">
+                                        <div class ="col-md-01 col-lg-2 col-xl-2"></div>
+                                        <div class="col-md-01 col-lg-8 col-xl-8">
+                                            <div class="g-recaptcha" data-sitekey="6LdLXOMiAAAAAIrk7xvnfv0xo0oyU7kmcIv4zY2Z"></div>
+                                        </div>
+                                        <div class ="col-md-01 col-lg-2 col-xl-2"></div>
+                                      </div>
+                                      <br/>
+                                      <input class="btn btn-outline-light btn-lg px-5 btn_login" type="submit"value="Bejelenkezés"></input><br>
+                                    </div>
+                                    <div>
+                                        <p class="mb-0">Még nincs fiókod? <a href="{% url 'Registration' %}" class="text-white-50 fw-bold">Regisztráció</a>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </form>
+{% endblock content %}  

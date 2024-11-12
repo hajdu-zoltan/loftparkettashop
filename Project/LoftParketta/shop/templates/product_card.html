@@ -1,0 +1,84 @@
+{% block content %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/popular_products.css' %}">
+
+<div class="card card-product">
+    {% if product.is_discounted %}
+    <div class="badge-discount">-{{ product.discount_rate|floatformat:0  }}%</div>
+    {% endif %}
+    <a class="nav-link" href="{% url 'shop:product_detail' product.id %}">
+        <div class="product-image">
+            {% if product.image %}
+            <img src="{{ product.image.url }}" alt="{{ product.name }}">
+            {% else %}
+            <img src="{% static 'images/placeholder.png' %}" alt="Placeholder Image">
+            {% endif %}
+        </div>
+    </a>
+    <div class="card-body d-flex flex-column justify-content-between">
+        <a class="nav-link" href="{% url 'shop:product_detail' product.id %}">
+            <h5 class="card-title">{{ product.name }}</h5>
+            <div class="price-container mt-auto">
+                <p class="card-text price-info">
+                    {% if product.is_discounted %}
+                    <span class="text-muted"><del>{{ product.price|floatformat:0 }} Ft</del></span><br>
+                    <span class="text-danger price-info-new">{{ product.discounted_price|floatformat:0 }} Ft</span>
+                    {% else %}
+                    <span class="text-danger price-info-new">{{ product.price|floatformat:0 }} Ft</span>
+                    {% endif %}
+                </p>
+            </div>
+        </a>
+<!--        <a class="add-to-cart position-relative" href="#" onclick="addToCart({{ product.id }}); return false;">-->
+<!--            <i class="fas fa-cart-plus position-absolute cart"></i>-->
+<!--        </a>-->
+    </div>
+</div>
+
+<script>
+    function updateCartCount(cart_count) {
+        var cartCountElement = document.getElementById('cart-count');
+        if (cartCountElement) {
+            cartCountElement.textContent = cart_count;
+        }
+    }
+
+    function addToCart(productId) {
+        var url = "{% url 'cart:add_to_cart' 0 %}".replace(0, productId);
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({ quantity: 1 }) // Ezzel növeljük a mennyiséget 1-gyel
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                updateCartCount(data.cart_count); // Frissítsük a kosárszámot a válasz alapján
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+</script>
+
+{% endblock %}

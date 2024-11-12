@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            color: #343a40;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #dee2e6;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        .product-name {
+            font-weight: bold;
+            color: #007bff;
+            text-decoration: none;
+        }
+        .product-name:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Új árajánlat kérés érkezett</h1>
+        <p><strong>Az ügyfél neve:</strong> {{ username }}</p>
+        <p><strong>Email:</strong> {{ email }}</p>
+        <p><strong>Telefonszám:</strong> {{ phone }}</p>
+        <p><strong>Üzenet:</strong> {{ message }}</p>
+
+        <h2>Kosár termékei:</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Termék neve</th>
+                    <th>Mennyiség</th>
+                    <th>Darab ár (Ft)</th>
+                    <th>Teljes ár (Ft)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart_items %}
+                <tr>
+                    <td>
+                        <a href="http://127.0.0.1:8000/shop/product/{{ item.product.id }}/" class="product-name">{{ item.product.name }}</a>
+                    </td>
+                    <td>{{ item.quantity }} db</td>
+                    <td>{{ item.discounted_price|floatformat:0 }} Ft</td>
+                    <td>{{ item.total_price|floatformat:0 }} Ft</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="signature">
+        <img src="http://127.0.0.1:8000/static/image/nav/logo.png" alt="Cég logó" class="logo"> <!-- Logó -->
+        <p>Üdvözlettel,</p>
+        <p>+3670 391 0818</p>
+        <p>Email: info@szakob2005bt.hu</p>
+        <p>Web: http://127.0.0.1:8000/shop/</p>
+        <p>SZAKÓ 2005 BT</p>
+    </div>
+</body>
+</html>

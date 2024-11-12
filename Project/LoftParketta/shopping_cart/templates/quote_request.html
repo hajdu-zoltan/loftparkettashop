@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block content %}
+ {% for item in cart_items %}
+        <h>{{ item.product.name }}</h>
+    {% endfor %}
+<form action="{% url 'quote_request' %}" method="POST">
+    {% csrf_token %}
+
+    <h3>Árajánlat kérése</h3>
+
+    <!-- Választási lehetőség: kosárból vagy egyedi termék -->
+    <div class="form-group">
+        <label for="request-type">Válaszd ki, mit szeretnél:</label>
+        <select name="request_type" id="request-type" class="form-control" onchange="toggleCustomProductFields(this.value)">
+            <option value="cart">Kosárban lévő termékekről kérek árajánlatot</option>
+            <option value="custom">Egyedi termékről kérek árajánlatot</option>
+        </select>
+    </div>
+    {% for item in cart_items %}
+        <h>{{ item.product.name }}</h>
+    {% endfor %}
+    <!-- Kosár termékeinek megjelenítése (amikor kosár opció van kiválasztva) -->
+    <div id="cart-items-section" class="form-group mt-3">
+        <h4>Kosárban lévő termékek</h4>
+        <ul>
+            {% for item in cart_items %}
+                <li>{{ item.product.name }} - {{ item.quantity }} db - {{ item.discounted_price }} Ft</li>
+            {% empty %}
+                <li>A kosár üres.</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Egyedi termék megadásának mezői (amikor egyedi opció van kiválasztva) -->
+    <div id="custom-product-section" class="form-group mt-3" style="display: none;">
+        <h4>Egyedi termék megadása</h4>
+        <div class="form-group">
+            <label for="custom-product-name">Termék neve:</label>
+            <input type="text" id="custom-product-name" name="custom_product_name" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+            <label for="custom-product-description">Termék leírása:</label>
+            <textarea id="custom-product-description" name="custom_product_description" class="form-control"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="custom-product-quantity">Mennyiség:</label>
+            <input type="number" id="custom-product-quantity" name="custom_product_quantity" class="form-control" min="1" required>
+        </div>
+    </div>
+
+    <!-- Kapcsolati adatok -->
+    <div class="form-group mt-4">
+        <h4>Kapcsolati adatok</h4>
+        <label for="name">Név:</label>
+        <input type="text" id="name" name="name" class="form-control" required>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" class="form-control" required>
+
+        <label for="phone">Telefonszám:</label>
+        <input type="tel" id="phone" name="phone" class="form-control" required>
+    </div>
+
+    <!-- Üzenet (ha van) -->
+    <div class="form-group mt-4">
+        <label for="message">Üzenet:</label>
+        <textarea id="message" name="message" class="form-control"></textarea>
+    </div>
+
+    <!-- Beküldés -->
+    <button type="submit" class="btn btn-primary mt-4">Árajánlat kérése</button>
+</form>
+
+<script>
+    function toggleCustomProductFields(value) {
+        var customSection = document.getElementById('custom-product-section');
+        var cartSection = document.getElementById('cart-items-section');
+
+        if (value === 'custom') {
+            customSection.style.display = 'block';
+            cartSection.style.display = 'none';
+        } else {
+            customSection.style.display = 'none';
+            cartSection.style.display = 'block';
+        }
+    }
+</script>
+
+{% endblock %}

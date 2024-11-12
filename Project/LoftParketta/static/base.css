@@ -1,0 +1,10 @@
+.info-bar {
+      background-color: #f8f9fa;
+      padding: 5px 0;
+      text-align: left;
+    }
+    .info-bar a {
+      color: #000;
+      text-decoration: none;
+      margin-right: 15px;
+    }

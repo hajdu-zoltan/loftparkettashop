@@ -1,0 +1,34 @@
+
+
+
+{% block content %}
+{% load static %}
+<!-- Linkek és CSS fájlok -->
+<!-- Osano Cookie Consent -->
+    <script src="https://cdn.osano.com/cookieconsent/latest/cookieconsent.js"></script>
+    <link rel="stylesheet" href="https://cdn.osano.com/cookieconsent/latest/cookieconsent.css" />
+
+    <script>
+        window.addEventListener("load", function(){
+            window.cookieconsent.initialise({
+                "palette": {
+                    "popup": {
+                        "background": "#000",
+                        "text": "#fff"
+                    },
+                    "button": {
+                        "background": "#f1d600",
+                        "text": "#000"
+                    }
+                },
+                "theme": "classic",
+                "content": {
+                    "message": "Ez a weboldal sütiket használ a legjobb felhasználói élmény érdekében.",
+                    "dismiss": "Elfogadom",
+                    "link": "További információk",
+                    "href": "/privacy-policy/"
+                }
+            });
+        });
+    </script>
+{% endblock %}

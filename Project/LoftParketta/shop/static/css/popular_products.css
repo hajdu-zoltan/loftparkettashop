@@ -1,0 +1,92 @@
+.card-product {
+    display: flex;
+    background-color: #ffff !important;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%; /* Ensure card takes full height */
+    width: 100%;
+}
+
+.card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex-grow: 1;
+}
+
+.product-image {
+    width: 90%;
+    height: 300px;
+    overflow: hidden;
+    position: relative;
+    margin: auto;
+}
+
+.product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Ensure image fits within the container */
+    object-position: center;
+}
+
+.price-info {
+    margin-top: auto; /* Push price-info to the bottom */
+    text-align: start; !important; /* Align text to the end */
+}
+
+.price-info-new {
+    font-size: 2em !important;
+}
+
+.badge-discount {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: red;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 50%;
+    font-size: 20px;
+    font-weight: bold;
+    z-index: 10;
+}
+
+.cart {
+    bottom: -9px;
+    right: 10px;
+    font-size: 32px;
+}
+
+.price-container {
+    margin-top: auto;
+    text-align: end; /* Ensure text is aligned to the right */
+}
+
+.product_container{
+    margin-top: 5vh;
+}
+
+.form-check-input:checked {
+    background-color:#17AF26 !important;
+}
+
+.filter_title{
+    color: #717378;
+}
+
+.btn-submit{
+    background-color: #17AF26 !important;
+}
+
+.btn-remove{
+    background-color: #F3FBF4 !important;
+    color: red !important;
+}
+
+
+.swiper-slide {
+    height: 100%; /* Az összes slide egyforma magasságú legyen */
+    width: 250px; /* A slide-ok szélessége */
+    display: flex;
+    justify-content: center;
+}

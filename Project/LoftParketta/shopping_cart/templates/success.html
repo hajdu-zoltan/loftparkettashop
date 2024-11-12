@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="alert alert-success text-center" role="alert">
+        <h1>Megrendelés sikeresen megtörtént!</h1>
+        <p>Kérjük, tekintse meg levelezését a rendelése megerősítéséhez.</p>
+        <a href="{% url 'home' %}" class="btn btn-primary">Vissza a főoldalra</a>
+    </div>
+</div>
+
+{% endblock %}

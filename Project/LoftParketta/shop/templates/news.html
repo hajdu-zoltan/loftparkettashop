@@ -1,0 +1,89 @@
+{% block content %}
+{% load static %}
+<style>
+  .custom-carousel .product-image-wrapper {
+    position: relative;
+    width: 100%;
+    height: 65Svh; /* Alapértelmezett magasság (kijelző magasságának 40%-a) */
+    overflow: hidden;
+  }
+
+  /* Reszponzív magasság beállítások különböző kijelzők méretére */
+  @media (max-width: 1200px) {
+    .custom-carousel .product-image-wrapper {
+      height: 45vh; /* Nagyobb képernyőkön 45% */
+    }
+  }
+
+  @media (max-width: 992px) {
+    .custom-carousel .product-image-wrapper {
+      height: 40vh; /* Közepes képernyőkön 50% */
+    }
+  }
+
+  @media (max-width: 768px) {
+    .custom-carousel .product-image-wrapper {
+      height: 35vh; /* Tablet méretnél 55% */
+    }
+  }
+
+  @media (max-width: 576px) {
+    .custom-carousel .product-image-wrapper {
+      height: 25vh; /* Mobilon 60% */
+    }
+  }
+
+  .custom-carousel .product-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: fil; /* A kép kitölti a területet anélkül, hogy torzulna */
+    object-position: center; /* A kép középpontjára fókuszál */
+  }
+
+  /* Testreszabott gombok */
+  .custom-carousel .carousel-control-prev-icon,
+  .custom-carousel .carousel-control-next-icon {
+    background-color: black;
+    border-radius: 50%;
+  }
+
+  .custom-carousel .carousel-indicators button {
+    background-color: black;
+  }
+</style>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<div id="carouselExampleIndicators" class="carousel slide custom-carousel" data-bs-ride="carousel">
+  <div class="carousel-indicators">
+    {% for news in news_items %}
+      <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="{{ forloop.counter0 }}" class="{% if forloop.first %}active{% endif %}" aria-current="{% if forloop.first %}true{% else %}false{% endif %}" aria-label="Slide {{ forloop.counter }}"></button>
+    {% endfor %}
+  </div>
+
+  <div class="carousel-inner">
+    {% for news in news_items %}
+      <div class="carousel-item {% if forloop.first %}active{% endif %}">
+        <a href="#">
+          <div class="product-image-wrapper">
+            <img src="{{ news.image.url }}" class="product-image" alt="{{ news.title }}">
+          </div>
+        </a>
+      </div>
+    {% endfor %}
+  </div>
+
+  <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Előző</span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Következő</span>
+  </button>
+</div>
+{% endblock %}

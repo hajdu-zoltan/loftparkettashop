@@ -1,0 +1,50 @@
+{% block content %}
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'css/popular_products.css' %}">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+
+
+<div class="container-fluid" style="width: 90%">
+    <h1>Featured Products</h1>
+    <div class="row">
+        {% for product in page_obj %}
+        <div class="col-lg-2 col-md-2 col-sm-6 mb-2 d-flex">
+            <div class="card card-product" style="">
+                {% if product.is_discounted %}
+                <div class="badge-discount">
+                    -{{ product.discount_rate|floatformat:0 }}%
+                </div>
+                {% endif %}
+                <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+                <div class="card-body d-flex flex-column">
+                    <a class="nav-link" href="{% url 'shop:product_detail' product.id %}">
+                        <h5 class="card-title">{{ product.name }}</h5>
+
+                        <i class="fas fa-chevron-down read-more-icon" style="cursor: pointer;"></i>
+                        <p class="card-text price-info">
+                            {% if product.is_discounted %}
+                            <span class="text-muted"><del>{{ product.price|floatformat:2 }} Ft</del></span>
+                            <br>
+                            <span class="text-danger price-info-new">
+                                {{ product.discounted_price|floatformat:0 }} Ft
+                            </span>
+                            {% else %}
+                            <span>{{ product.price|floatformat:2 }} Ft</span>
+                            {% endif %}
+                        </p>
+                    </a>>
+                    <!-- Cart Icon -->
+                    <a href="{% url 'cart:add_to_cart' product.id %}" class="mt-auto position-relative">
+                        <i class="fas fa-cart-plus position-absolute cart" style=""></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+</div>
+{% endblock %}
