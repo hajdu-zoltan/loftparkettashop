@@ -1,6 +1,8 @@
 from django.db import models
 from users.models import CustomUser
 from django.utils import timezone
+from versatileimagefield.fields import VersatileImageField
+
 import uuid
 
 class Brand(models.Model):
@@ -34,7 +36,12 @@ class Product(models.Model):
     brand = models.ForeignKey(Brand, on_delete=models.SET_NULL, null=True, blank=True)
     popularity = models.IntegerField(default=0)
     rating = models.DecimalField(max_digits=3, decimal_places=2, default=0.00)
-    image = models.ImageField(upload_to='product_images/', null=True, blank=True)
+    # image = VersatileImageField(upload_to='product_images/', null=True, blank=True)
+    image = VersatileImageField(
+        'Image',
+        upload_to='product_images/',
+        null=True, blank=True
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     related_products = models.ManyToManyField('self', symmetrical=True, blank=True)

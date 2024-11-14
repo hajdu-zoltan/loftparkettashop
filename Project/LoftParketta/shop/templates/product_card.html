@@ -9,7 +9,7 @@
     <a class="nav-link" href="{% url 'shop:product_detail' product.id %}">
         <div class="product-image">
             {% if product.image %}
-            <img src="{{ product.image.url }}" alt="{{ product.name }}">
+            <img src="{{ product.image.thumbnail.500x500 }}" />
             {% else %}
             <img src="{% static 'images/placeholder.png' %}" alt="Placeholder Image">
             {% endif %}

@@ -44,7 +44,7 @@
 </style>
 
 <div class="container d-flex justify-content-center align-items-center vh-100">
-    <form action="{% url 'shopping_cart:payment' %}" method="POST" class="w-50" id="checkoutForm">
+    <form action="{% url 'shopping_cart:payment' %}" method="POST" class="" id="checkoutForm">
         {% csrf_token %}
 
         <!-- Progress Bar -->
@@ -78,12 +78,12 @@
 
                 <div class="row">
                     <div class="form-group col-md-6">
-                        <label for="billing_first_name">Keresztnév:</label>
-                        <input type="text" id="billing_first_name" name="billing_first_name" class="form-control" required>
-                    </div>
-                    <div class="form-group col-md-6">
                         <label for="billing_last_name">Vezetéknév:</label>
                         <input type="text" id="billing_last_name" name="billing_last_name" class="form-control" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="billing_first_name">Keresztnév:</label>
+                        <input type="text" id="billing_first_name" name="billing_first_name" class="form-control" required>
                     </div>
                     <div class="form-group col-md-12">
                         <label for="billing_email">Email:</label>

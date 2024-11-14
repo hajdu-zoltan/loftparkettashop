@@ -36,7 +36,7 @@
         <!-- Termék kép -->
         <div class="col-md-6">
             <div class="position-relative product-image border border-2 border-secondary">
-                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image-card">
+                <img src="{{ product.image.thumbnail.500x500 }}" alt="{{ product.name }}" class="product-image-card">
                 {% if product.is_discounted %}
                 <span class="badge badge-discount">-{{ product.discount_rate|floatformat:0  }}%</span>
                 {% endif %}

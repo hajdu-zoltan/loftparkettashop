@@ -19,9 +19,9 @@
     <div class="container-fluid mynavbar fixed-top" id="mynavbar">
   <div class="row info-bar">
     <div class="col-auto info-item">
-      <a class="nav-link" href="mailto:loftparketta@gmail.com">
+      <a class="nav-link" href="mailto:info@loftparketta.hu">
         <i class="fas fa-envelope" aria-hidden="true"></i>
-        loftparketta@gmail.com
+        info@loftparketta.hu
       </a>
     </div>
     <div class="col-auto info-item">
@@ -51,9 +51,9 @@
             <li class="nav-item">
               <a class="nav-link {% if actual_page == 'products_discounted'%} active {% endif %}" href="{% url 'shop:products' %}?order_by=discounted">Akciók</a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link {% if actual_page == 'news'%} active {% endif %}" href="#">Hírek</a>
-            </li>
+<!--            <li class="nav-item">-->
+<!--              <a class="nav-link {% if actual_page == 'news'%} active {% endif %}" href="#">Hírek</a>-->
+<!--            </li>-->
           </ul>
           <div class="d-flex ms-auto">
             <form class="d-flex me-3" role="search" method="GET" action="{% url 'shop:search' %}">
@@ -155,7 +155,7 @@
             <div class="col-6 col-md-2 mb-3">
               <h5>Elérhetőségink</h5>
               <ul class="nav flex-column">
-                <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-white">loftparketta@gmail.com</a></li>
+                <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-white">info@loftparketta.hu</a></li>
                 <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-white">06301111111</a></li>
                 <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-white">Szeged, Kossuth Lajos sgrt. 49-51, 6724</a></li>
               </ul>

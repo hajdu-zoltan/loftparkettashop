@@ -153,9 +153,8 @@
         </li>
         {% endif %}
 
-        <!-- Első 3 oldal gomb -->
+        <!-- Minden oldal gomb -->
         {% for num in page_obj.paginator.page_range %}
-        {% if num <= 3 or num == page_obj.paginator.num_pages %}
             {% if page_obj.number == num %}
             <li class="page-item active" aria-current="page">
                 <span class="page-link">{{ num }}</span>
@@ -165,18 +164,7 @@
                 <a class="page-link" href="?page={{ num }}">{{ num }}</a>
             </li>
             {% endif %}
-        {% endif %}
         {% endfor %}
-
-        <!-- Utolsó oldal gomb, ha több mint 4 oldal van -->
-        {% if page_obj.paginator.num_pages > 4 %}
-            <li class="page-item">
-                <span class="page-link">...</span>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">{{ page_obj.paginator.num_pages }}</a>
-            </li>
-        {% endif %}
 
         <!-- Következő oldal gomb -->
         {% if page_obj.has_next %}
@@ -188,7 +176,6 @@
         {% endif %}
     </ul>
 </nav>
-
 
 
         </div>
