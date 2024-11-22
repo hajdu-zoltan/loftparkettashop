@@ -1,0 +1,67 @@
+<!-- wheel.html -->
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ family_name.name }} Családnév Sorsolása</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            color: #333;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #4CAF50;
+        }
+        .button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Karácsonyi húzás</h1>
+        <p>A következő családnévre történik a sorsolás:</p>
+        <p><strong>{{ family_name.name }}</strong></p>
+
+        {% if drawn_family_name %}
+            <div class="result">
+                <p>Sorsolt családnév: <strong>{{ drawn_family_name }}</strong></p>
+            </div>
+        {% else %}
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="button">Sorsolás indítása</button>
+            </form>
+        {% endif %}
+    </div>
+</body>
+</html>

@@ -15,6 +15,7 @@ urlpatterns = [
     path('product/<int:product_id>/', views.product_detail, name='product_detail'),
     path('search/', views.search, name='search'),
     path('cookie-policy/', views.cookie_policy, name='cookie_policy'),
+
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

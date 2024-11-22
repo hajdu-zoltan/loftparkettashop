@@ -1,6 +1,7 @@
 import json
 import requests
 from django.urls import reverse
+import logging
 
 base_url = "https://api.test.barion.com"
 POS_KEY = "57b233ce-3ba1-4305-9117-1149002ec392"
@@ -47,6 +48,7 @@ def create_payment(request, user, items, order):
     data = json.dumps(payload)
     response = requests.post(START_PAYMENT, headers=headers, data=data)
     print(f"barion_response")
+    logging.info(f"response: {response}")
     if response.status_code == 200:
         print("Payment created successfully!")
         print("Response JSON:", response.json())

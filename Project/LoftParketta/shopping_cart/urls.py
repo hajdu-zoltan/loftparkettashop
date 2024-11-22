@@ -18,9 +18,9 @@ urlpatterns = [
     path('payment/start/', views.StartPaymentView.as_view(), name='start_payment'),
     path('payment/callback/', views.payment_callback, name='payment_callback'),
     path('payment/success/', views.payment_success, name='payment_success'),
-    path("/barionafter", views.barion_after, name="barion_after"),
+    path("barionafter", views.barion_after, name="barion_after"),
     path("payment_status/<str:payment_id>/", views.payment_status, name="payment_status"),
-    path("/barionipn", views.barion_ipn, name="barion_ipn"),
-    path("/checkvat", views.check_vat, name="check_vat"),
+    path("barionipn", views.barion_ipn, name="barion_ipn"),
+    path("checkvat", views.check_vat, name="check_vat"),
 
 ]

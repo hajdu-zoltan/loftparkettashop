@@ -7,6 +7,7 @@ from django.conf.urls.static import static
 from django.conf import settings
 from django.contrib.auth import views as auth_views
 from shopping_cart import  views as shopping_cart_views
+from draw import views as draw_views
 
 urlpatterns = [
     path('', home, name='home'),
@@ -21,10 +22,11 @@ urlpatterns = [
     path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(template_name='Password_reset_done.html'), name='password_reset_done'),
     path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name="Password_reset_confirm.html"), name='password_reset_confirm'),
     path('reset/done/', auth_views.PasswordResetCompleteView.as_view(template_name='Password_reset_complete.html'), name='password_reset_complete'),
-    path("/barionafter", shopping_cart_views.barion_after, name="barion_after"),
+    path("barionafter", shopping_cart_views.barion_after, name="barion_after"),
     path("payment_status/<str:payment_id>/", shopping_cart_views.payment_status, name="payment_status"),
-    path("/barionipn", shopping_cart_views.barion_ipn, name="barion_ipn"),
-    path("/checkvat", shopping_cart_views.check_vat, name="check_vat"),
+    path("barionipn", shopping_cart_views.barion_ipn, name="barion_ipn"),
+    path("checkvat", shopping_cart_views.check_vat, name="check_vat"),
+    path('wheel/', include('draw.urls', namespace='wheel')),
 
 ]
 if settings.DEBUG:

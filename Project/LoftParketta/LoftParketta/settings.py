@@ -27,7 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.0.15', '192.168.1.167']
 SITE_ID = 1
-SITE_DOMAIN = '0.0.0.0:8000'
+SITE_DOMAIN = '0.0.0.0:8080'
 
 SOCIALACCOUNT_LOGIN_ON_GET=True
 
@@ -56,6 +56,8 @@ INSTALLED_APPS = [
     'django_recaptcha',
     'crispy_forms',
     'crispy_bootstrap5',
+    'versatileimagefield',
+    'draw',
 ]
 
 MIDDLEWARE = [
@@ -178,7 +180,7 @@ SILENCED_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error']
 
 # További beállítások, ha szükséges
 SITE_ID = 1
-SITE_URL = 'http://127.0.0.1:8000'
+SITE_URL = 'http://127.0.0.1:8080'
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / "static"]
 MEDIA_URL = '/media/'
@@ -188,13 +190,12 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"  # Vagy "bootstrap4", ha a 4-es verziót használod
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-#EMAIL_HOST_USER = 'figaroszeged@gmail.com'
-#EMAIL_HOST_PASSWORD = 'kqtadpahcatapajg'
-EMAIL_HOST_USER = 'vkasztalos@gmail.com'
-EMAIL_HOST_PASSWORD = 'idwyqwdhfiufmmyw'
+EMAIL_USE_SSL = True
+EMAIL_HOST = 'mail.loftparketta.hu'
+EMAIL_PORT = 465
+EMAIL_HOST_USER = 'info@loftparketta.hu'
+EMAIL_HOST_PASSWORD = 'tI3.@Lbnp}G}'
+DEFAULT_FROM_EMAIL = 'info@loftparketta.hu'
 
 PASSWORD_RESET_TIMEOUT = 14400
 

@@ -32,6 +32,7 @@ class ProductAdmin(admin.ModelAdmin):
     list_filter = ('category', 'brand', 'is_discounted')
     search_fields = ('name',)
 
+
 admin.site.register(Brand)
 admin.site.register(Category)
 admin.site.register(Product, ProductAdmin)
