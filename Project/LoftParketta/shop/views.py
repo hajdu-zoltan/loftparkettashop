@@ -403,3 +403,6 @@ def search(request):
 def cookie_policy(request):
     return render(request, 'cookie_policy.html')
 
+def aszf(request):
+    return render(request, 'aszf.html')
+

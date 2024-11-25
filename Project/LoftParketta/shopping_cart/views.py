@@ -27,8 +27,10 @@ import uuid
 logger = logging.getLogger(__name__)
 cart_count = 0
 
+
+
 def view_cart(request):
-    vat_rate = Decimal('0.27')
+    vat_rate = Decimal('0.27')  # ÁFA kulcs
     vat_amount = Decimal('0')
     total_out_vat = Decimal('0')
     total_price = Decimal('0')
@@ -43,17 +45,30 @@ def view_cart(request):
 
         cart_items = []
         total_price = Decimal('0')
+
         for product_id, quantity in cart.items():
-            product = get_object_or_404(Product, id=product_id)
-            product_price = Decimal(product.price)
-            discounted_price = product_price * (1 - (product.discount_rate / 100))
-            cart_items.append({
-                'product': product,
-                'discounted_price': discounted_price,
-                'quantity': quantity,
-                'total_price': discounted_price * quantity
-            })
-            total_price += discounted_price * quantity
+            # Ellenőrizzük, hogy a mennyiség egész szám legyen
+            if not isinstance(quantity, int):
+                try:
+                    quantity = int(quantity)
+                except (ValueError, TypeError):
+                    quantity = 0  # Hibás érték esetén kihagyjuk
+                    continue
+
+            # Töltjük a termékinformációkat
+            try:
+                product = get_object_or_404(Product, id=product_id)
+                product_price = Decimal(product.price)
+                discounted_price = product_price * (1 - (product.discount_rate / 100))
+                cart_items.append({
+                    'product': product,
+                    'discounted_price': discounted_price,
+                    'quantity': quantity,
+                    'total_price': discounted_price * quantity
+                })
+                total_price += discounted_price * quantity
+            except Product.DoesNotExist:
+                continue  # Ha a termék nem található, kihagyjuk
 
         cart_count = len(cart_items)
         if total_price > 0:
@@ -67,6 +82,7 @@ def view_cart(request):
         # Bejelentkezett felhasználó esetén
         cart_items = CartItem.objects.filter(user=request.user)
         total_price = Decimal('0')
+
         for item in cart_items:
             product = item.product
             product_price = Decimal(product.price)
@@ -125,6 +141,9 @@ def add_to_cart(request, product_id):
     return JsonResponse(response_data)
 
 def remove_from_cart(request, item_id):
+    """
+    Termék eltávolítása a kosárból (mennyiség csökkentése vagy teljes törlés).
+    """
     if request.user.is_authenticated:
         # Bejelentkezett felhasználó esetén
         try:
@@ -135,12 +154,13 @@ def remove_from_cart(request, item_id):
                 # Ha a mennyiség nagyobb, mint 1, csökkentjük
                 cart_item.quantity -= 1
                 cart_item.save()
+                logger.info(f"Decreased quantity for product {item_id} in user {request.user}'s cart.")
             else:
                 # Ha a mennyiség 1 vagy kevesebb, töröljük a terméket a kosárból
                 cart_item.delete()
+                logger.info(f"Removed product {item_id} from user {request.user}'s cart.")
         except CartItem.DoesNotExist:
-            logger.error(f"CartItem with product id {item_id} does not exist for user {request.user}")
-
+            logger.warning(f"CartItem with product id {item_id} does not exist for user {request.user}.")
     else:
         # Névtelen felhasználó esetén, kosár tárolása a session-ben
         cart = request.session.get('cart', {})
@@ -149,20 +169,28 @@ def remove_from_cart(request, item_id):
             # Ha a mennyiség nagyobb, mint 1, csökkentjük
             if cart[str(item_id)] > 1:
                 cart[str(item_id)] -= 1
+                logger.info(f"Decreased quantity for product {item_id} in session cart.")
             else:
                 # Ha a mennyiség 1 vagy kevesebb, töröljük a terméket a kosárból
                 del cart[str(item_id)]
+                logger.info(f"Removed product {item_id} from session cart.")
 
+            # Frissítjük a session-t
             request.session['cart'] = cart
         else:
-            logger.error(f"Product with id {item_id} not found in session cart")
+            logger.warning(f"Product with id {item_id} not found in session cart.")
 
+    # Visszairányítjuk a kosár nézetéhez
     return redirect('shopping_cart:view_cart')
 
 def delete_from_cart(request, item_id):
+    """
+    Termék teljes eltávolítása a kosárból.
+    """
     if request.user.is_authenticated:
         # Bejelentkezett felhasználó esetén
         try:
+            # Kosár elem megkeresése és törlése
             cart_item = CartItem.objects.get(id=item_id, user=request.user)
             cart_item.delete()
             logger.info(f"Product with id {item_id} deleted from cart for user {request.user}.")
@@ -172,26 +200,42 @@ def delete_from_cart(request, item_id):
         # Névtelen felhasználó esetén, kosár tárolása a session-ben
         cart = request.session.get('cart', {})
         if str(item_id) in cart:
-            del cart[str(item_id)]  # Teljesen töröljük a terméket
+            # Termék teljes eltávolítása a kosárból
+            del cart[str(item_id)]
             request.session['cart'] = cart
             logger.info(f"Product with id {item_id} deleted from session cart.")
         else:
             logger.error(f"Product with id {item_id} not found in session cart.")
 
+    # Visszairányítás a kosár nézetéhez
     return redirect('shopping_cart:view_cart')
 
 def add_quantity(request, item_id):
+    """
+    Termék mennyiségének növelése a kosárban.
+    """
     logger.info(f"Adding quantity for item_id: {item_id}")
     if request.method == 'POST':
         try:
+            # A POST kéréssel érkezett mennyiség lekérdezése (alapértelmezett 1)
             add_quantity = int(request.POST.get('quantity', 1))
             logger.info(f"Quantity to add: {add_quantity}")
 
+            if add_quantity <= 0:
+                raise ValueError("The quantity to add must be a positive integer.")
+
             if request.user.is_authenticated:
-                # Authentikált felhasználók kosarának frissítése
-                for _ in range(add_quantity):
-                    add_to_cart(request, item_id)
+                # Authentikált felhasználók esetén
+                cart_item, created = CartItem.objects.get_or_create(
+                    product_id=item_id,
+                    user=request.user,
+                    defaults={'quantity': 0}
+                )
+                cart_item.quantity += add_quantity
+                cart_item.save()
+                logger.info(f"Updated quantity for item_id: {item_id} to {cart_item.quantity}")
                 cart_count = CartItem.objects.filter(user=request.user).count()
+
             else:
                 # Névtelen felhasználók kosarának frissítése a session-ben
                 cart = request.session.get('cart', {})
@@ -199,6 +243,7 @@ def add_quantity(request, item_id):
                 cart[str(item_id)] = current_quantity + add_quantity
                 request.session['cart'] = cart
                 cart_count = sum(cart.values())
+                logger.info(f"Updated session cart for item_id: {item_id}, quantity: {cart[str(item_id)]}")
 
             response_data = {
                 'status': 'success',
@@ -207,17 +252,16 @@ def add_quantity(request, item_id):
             return JsonResponse(response_data)
 
         except Exception as e:
-            logger.error(f"Error adding quantity: {e}")
+            logger.error(f"Error adding quantity for item_id {item_id}: {e}")
             response_data = {
-                'status': 'success',
-                'cart_count': cart_count,
+                'status': 'error',
+                'message': str(e),
             }
-            return JsonResponse(response_data)
+            return JsonResponse(response_data, status=400)
 
     else:
+        logger.warning("Invalid request method. Only POST is allowed.")
         return HttpResponseNotAllowed(['POST'])
-
-
 def update_quantity(request, item_id):
     logger.info(f"Received request to update quantity for item_id: {item_id}")
     if request.method == 'POST':

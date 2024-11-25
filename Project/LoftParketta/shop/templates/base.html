@@ -137,10 +137,10 @@
             <div class="col-6 col-md-2 mb-3">
               <h5>FELHASZNÁLÓM</h5>
               <ul class="nav flex-column">
-                <li class="nav-item mb-2"><a href="#" class="nav-link p-0  text-white">Regisztráció</a></li>
-                <li class="nav-item mb-2"><a href="#" class="nav-link p-0  text-white">Bejelentkezés</a></li>
-                <li class="nav-item mb-2"><a href="#" class="nav-link p-0  text-white">Elfelejtett jelszó</a></li>
-                <li class="nav-item mb-2"><a href="#" class="nav-link p-0  text-white">Kosaram</a></li>
+                <li class="nav-item mb-2"><a href="{% url 'users:register' %}" class="nav-link p-0  text-white">Regisztráció</a></li>
+                <li class="nav-item mb-2"><a href="{% url 'users:login' %}" class="nav-link p-0  text-white">Bejelentkezés</a></li>
+                <li class="nav-item mb-2"><a href="{% url 'users:password_change' %}" class="nav-link p-0  text-white">Elfelejtett jelszó</a></li>
+                <li class="nav-item mb-2"><a href="{% url 'cart:view_cart' %}" class="nav-link p-0  text-white">Kosaram</a></li>
               </ul>
             </div>
       
@@ -148,16 +148,17 @@
               <h5>Hasznos linkek</h5>
               <ul class="nav flex-column">
                 <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-white">Hírek</a></li>
-                <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-white">Termékkínálatunk</a></li>
+                <li class="nav-item mb-2"><a href="{% url 'shop:products' %}" class="nav-link p-0 text-white">Termékkínálatunk</a></li>
+                <li class="nav-item mb-2"><a href="{% url 'shop:aszf' %}" class="nav-link p-0 text-white">ÁSZF</a></li>
               </ul>
             </div>
       
             <div class="col-6 col-md-2 mb-3">
               <h5>Elérhetőségink</h5>
               <ul class="nav flex-column">
-                <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-white">info@loftparketta.hu</a></li>
-                <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-white">06301111111</a></li>
-                <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-white">Szeged, Kossuth Lajos sgrt. 49-51, 6724</a></li>
+                <li class="nav-item mb-2"><a class="nav-link p-0 text-white">info@loftparketta.hu</a></li>
+                <li class="nav-item mb-2"><a class="nav-link p-0 text-white">06301111111</a></li>
+                <li class="nav-item mb-2"><a class="nav-link p-0 text-white">Szeged, Kossuth Lajos sgrt. 49-51, 6724</a></li>
               </ul>
             </div>
       
@@ -166,6 +167,9 @@
           <div class="d-flex flex-column flex-sm-row justify-content-between py-4 my-4 border-top">
             <p>© 2022 Company, Inc. All rights reserved.</p>
             <ul class="list-unstyled d-flex">
+              <li class="ms-3"><a class="link-dark" href="#">
+               <img src="{% static 'image/barion.png' %}" alt="Barion">
+              </li>
               <li class="ms-3"><a class="link-dark" href="#"><svg width="68" height="68" viewBox="0 0 68 68" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                 <rect width="68" height="68" fill="url(#pattern0_48_894)"/>
                 <defs>

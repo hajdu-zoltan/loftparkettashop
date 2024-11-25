@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
+{% load static %}
 <style>
     .progress-container {
         display: flex;
@@ -85,30 +86,32 @@
                         <label for="billing_first_name">Keresztnév:</label>
                         <input type="text" id="billing_first_name" name="billing_first_name" class="form-control" required>
                     </div>
-                    <div class="form-group col-md-12">
+                    <div class="form-group col-md-6">
                         <label for="billing_email">Email:</label>
                         <input type="email" id="billing_email" name="billing_email" class="form-control" required>
                     </div>
-                    <div class="form-group col-md-12">
+                    <div class="form-group col-md-6">
                         <label for="billing_phone">Telefonszám:</label>
                         <input type="tel" id="billing_phone" name="billing_phone" class="form-control" required>
                     </div>
+
                     <div class="form-group col-md-12">
-                        <label for="billing_postal_code">Irányítószám:</label>
-                        <input type="text" id="billing_postal_code" name="billing_postal_code" class="form-control" required>
-                    </div>
-                    <div class="form-group col-md-12">
-                        <label for="billing_address">Cím:</label>
+                        <label for="billing_address">Cím (Közterület neve, típusa, száma; emelet, ajtó):</label>
                         <input type="text" id="billing_address" name="billing_address" class="form-control" required>
-                    </div>
-                    <div class="form-group col-md-12">
-                        <label for="billing_city">Város:</label>
-                        <input type="text" id="billing_city" name="billing_city" class="form-control" required>
                     </div>
                     <div class="form-group col-md-12">
                         <label for="billing_country">Ország:</label>
                         <input type="text" id="billing_country" name="billing_country" class="form-control" required>
                     </div>
+                    <div class="form-group col-md-6">
+                        <label for="billing_postal_code">Irányítószám:</label>
+                        <input type="text" id="billing_postal_code" name="billing_postal_code" class="form-control" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="billing_city">Város:</label>
+                        <input type="text" id="billing_city" name="billing_city" class="form-control" required>
+                    </div>
+
 
                     <!-- Céghez kapcsolódó mezők, kezdetben rejtve -->
                     <div id="companyFields" style="display:none;">
@@ -131,33 +134,33 @@
                 <h3 class="text-center">Szállítási adatok</h3>
                 <div class="row">
                     <div class="form-group col-md-6">
-                        <label for="shipping_first_name">Keresztnév:</label>
-                        <input type="text" id="shipping_first_name" name="shipping_first_name" class="form-control" required>
-                    </div>
-                    <div class="form-group col-md-6">
                         <label for="shipping_last_name">Vezetéknév:</label>
                         <input type="text" id="shipping_last_name" name="shipping_last_name" class="form-control" required>
                     </div>
-                    <div class="form-group col-md-12">
-                        <label for="shipping_postal_code">Irányítószám:</label>
-                        <input type="text" id="shipping_postal_code" name="shipping_postal_code" class="form-control" required>
+                    <div class="form-group col-md-6">
+                        <label for="shipping_first_name">Keresztnév:</label>
+                        <input type="text" id="shipping_first_name" name="shipping_first_name" class="form-control" required>
                     </div>
                     <div class="form-group col-md-12">
-                        <label for="shipping_address">Cím:</label>
+                        <label for="shipping_address">Cím (Közterület neve, típusa, száma; emelet, ajtó):</label>
                         <input type="text" id="shipping_address" name="shipping_address" class="form-control" required>
-                    </div>
-                    <div class="form-group col-md-12">
-                        <label for="shipping_city">Város:</label>
-                        <input type="text" id="shipping_city" name="shipping_city" class="form-control" required>
                     </div>
                     <div class="form-group col-md-12">
                         <label for="shipping_country">Ország:</label>
                         <input type="text" id="shipping_country" name="shipping_country" class="form-control" required>
                     </div>
+                    <div class="form-group col-md-6">
+                        <label for="shipping_postal_code">Irányítószám:</label>
+                        <input type="text" id="shipping_postal_code" name="shipping_postal_code" class="form-control" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="shipping_city">Város:</label>
+                        <input type="text" id="shipping_city" name="shipping_city" class="form-control" required>
+                    </div>
                     <div class="form-group col-md-12">
                         <label for="shipping_method">Szállítási mód:</label>
                         <select id="shipping_method" name="shipping_method" class="form-control" required>
-                            <option value="free_shipping">Ingyenes szállítás Szegeden belül</option>
+                            <option value="free_shipping">Ingyenes szállítás Szegeden belül 50.000 Ft feletti vásárlás esetén.</option>
                             <option value="home_delivery">Házhoz szállítás</option>
                             <option value="store_pickup">Boltban történő átvétel</option>
                         </select>
@@ -165,10 +168,12 @@
                 </div>
             </div>
         </div>
-
-        <!-- Lépés 3: Fizetés -->
+                <!-- Lépés 3: Fizetés -->
         <div id="step3" class="step-content" style="display:none;">
             <div class="card shadow-0 border p-4">
+                <h3 class="text-center">Szállítási adatok</h3>
+                <div class="row">
+
                 <h3 class="text-center">Kosár adatai</h3>
                 <div id="cart-items-section" class="form-group mt-3">
                     <h4>Kosárban lévő termékek</h4>
@@ -194,14 +199,15 @@
                 <div class="form-group mt-3">
                     <label for="payment_method">Fizetési mód:</label>
                     <select id="payment_method" name="payment_method" class="form-control" required>
-                        <option value="credit_card">Bankkártyás fizetés</option>
+                        <option value="credit_card"><img src="{% static 'image/barion_icon.png' %}" alt="Logo" width="95" height="79">Bankkártyás fizetés(Barion)</option>
                         <option value="bank_transfer">Banki átutalás</option>
                         <option value="cash_on_delivery">Utánvétes</option>
                     </select>
                 </div>
+                </div>
+                <img src="{% static 'image/barion.png' %}" style="width:50%" alt="Barion">
             </div>
         </div>
-
         <!-- Navigation Buttons -->
         <div class="d-flex justify-content-between mt-4">
             <button type="button" class="btn btn-secondary" id="prevBtn" style="display:none;">Vissza</button>
