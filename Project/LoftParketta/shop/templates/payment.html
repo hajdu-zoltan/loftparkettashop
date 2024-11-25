@@ -206,7 +206,15 @@
                 </div>
                 </div>
                 <img src="{% static 'image/barion.png' %}" style="width:50%" alt="Barion">
+                <div class="form-check mt-4">
+                <input type="checkbox" class="form-check-input" id="acceptTerms" name="accept_terms" required>
+                <label class="form-check-label" for="acceptTerms">
+                    Elfogadom az <a href="{% url 'shop:aszf' %}" target="_blank">Általános Szerződési Feltételeket</a> és az <a href="{% url 'shop:privacy_policy' %}" target="_blank">Adatkezelési tájékoztatót</a>.
+                </label>
             </div>
+            </div>
+
+
         </div>
         <!-- Navigation Buttons -->
         <div class="d-flex justify-content-between mt-4">
@@ -218,6 +226,15 @@
 </div>
 
 <script>
+
+    document.getElementById('checkoutForm').addEventListener('submit', function (event) {
+        const acceptTerms = document.getElementById('acceptTerms');
+        if (!acceptTerms.checked) {
+            event.preventDefault();
+            alert('Kérlek, fogadd el az Általános Szerződési Feltételeket és az Adatkezelési tájékoztatót a folytatáshoz.');
+        }
+    });
+
     document.addEventListener("DOMContentLoaded", function () {
         let currentStep = 1;
         const totalSteps = 3;

@@ -406,3 +406,5 @@ def cookie_policy(request):
 def aszf(request):
     return render(request, 'aszf.html')
 
+def privacy_policy(request):
+    return render(request, 'privacy_policy.html')

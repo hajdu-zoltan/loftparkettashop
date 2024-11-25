@@ -17,6 +17,7 @@ urlpatterns = [
     path('search/', views.search, name='search'),
     path('cookie-policy/', views.cookie_policy, name='cookie_policy'),
     path('aszf/', views.aszf, name='aszf'),
+    path('privacy_policy/', views.privacy_policy, name='privacy_policy'),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

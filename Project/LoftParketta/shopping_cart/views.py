@@ -451,10 +451,16 @@ def payment_view(request):
     cart_items = []
     User = get_user_model()  # User modell betöltése
     total_price = Decimal('0')
+    cart_count = 0
+    vat_amount = Decimal('0')
+    total_out_vat = Decimal('0')
+    cart_count = 0
+    total_price = Decimal('0')
 
     if request.method == 'POST':
         form = PaymentForm(request.POST)
         if form.is_valid():
+
             # Szállítási adatok kinyerése
             shipping_first_name = form.cleaned_data['shipping_first_name']
             shipping_last_name = form.cleaned_data['shipping_last_name']
@@ -665,10 +671,7 @@ def payment_view(request):
     else:
         form = PaymentForm()
         vat_rate = Decimal('0.27')
-        vat_amount = Decimal('0')
-        total_out_vat = Decimal('0')
-        cart_count = 0
-        total_price = Decimal('0')
+
 
         if isinstance(request.user, AnonymousUser):
             # Névtelen felhasználó esetén: kosár tárolása a session-ben
