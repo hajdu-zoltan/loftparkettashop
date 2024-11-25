@@ -92,13 +92,14 @@ def process_items(items):
     barion_items = []
     price_sum = 0
     for item in items:
-        new_item = {"Name": "Parking ticket",
-         "Description": item['product'].description,
-         "Quantity": item['quantity'],
-         "Unit": "Piece",
-         "Unit price": int(item['discounted_price']),
-         "ItemTotal": int(item['total_price'])
-         }
+        new_item = {
+            "Name": item.product.name,
+            "Description": item.product.description,  # Pont operátor az attribútum eléréséhez
+            "Quantity": item.quantity,
+            "Unit": "Piece",
+            "Unit price": int(item.product.price * item.product.discount_rate) if item.product.is_discounted else int(item.product.price),
+            "ItemTotal": int((item.product.price * item.product.discount_rate) * item.quantity) if item.product.is_discounted else int(item.product.price * item.quantity),
+        }
         barion_items.append(new_item)
-        price_sum += int(item['total_price'])
+        price_sum += int(new_item['ItemTotal'])
     return barion_items, price_sum
