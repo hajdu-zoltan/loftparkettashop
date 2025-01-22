@@ -7,7 +7,7 @@
             <h3>Árajánlat kérése</h3>
         </div>
         <div class="card-body">
-           <form action="{% url 'shopping_cart:quote_request' %}" method="POST">
+       <form action="{% url 'shopping_cart:quote_request' %}" method="POST">
     {% csrf_token %}
 
     <!-- Választási lehetőség: kosárból vagy egyedi termék -->
@@ -84,6 +84,7 @@
     </div>
 
     <!-- Kapcsolati adatok -->
+    <h5>Kapcsolati adatok</h5>
     <div class="form-row mt-4">
         <div class="form-group col-md-6">
             <label for="name">Név:</label>
@@ -99,6 +100,34 @@
         <div class="form-group col-md-6">
             <label for="phone">Telefonszám:</label>
             <input type="tel" id="phone" name="phone" class="form-control" required>
+        </div>
+    </div>
+    <h5>Szállítási adatok</h5>
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label for="shipping_address">Cím (Közterület neve, típusa, száma; emelet, ajtó):</label>
+            <input type="text" id="shipping_address" name="shipping_address" class="form-control" required>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-6">
+        <label for="shipping_country">Ország:</label>
+        <input type="text" id="shipping_country" name="shipping_country" class="form-control" required>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label for="shipping_postal_code">Irányítószám:</label>
+            <input type="text" id="shipping_postal_code" name="shipping_postal_code" class="form-control" required>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label for="shipping_city">Város:</label>
+            <input type="text" id="shipping_city" name="shipping_city" class="form-control" required>
         </div>
     </div>
 

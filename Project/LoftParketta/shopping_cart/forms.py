@@ -10,7 +10,11 @@ class QuoteRequestForm(forms.Form):
     name = forms.CharField(max_length=100, required=True)
     email = forms.EmailField(required=True)
     phone = forms.CharField(required=True, max_length=15)
-    message = forms.CharField(required=False, widget=forms.Textarea)
+    message = forms.CharField(required=True, widget=forms.Textarea)
+    shipping_address: forms.CharField(required=True, max_length=150)
+    shipping_country: forms.CharField(required=True, max_length=150)
+    shipping_postal_code: forms.CharField(required=True, max_length=150)
+    shipping_city: forms.CharField(required=True, max_length=150)
 
     def clean(self):
         cleaned_data = super().clean()

@@ -7,7 +7,7 @@
     <div class="badge-discount">-{{ product.discount_rate|floatformat:0  }}%</div>
     {% endif %}
     <a class="nav-link" href="{% url 'shop:product_detail' product.id %}">
-        <div class="product-image">
+        <div class="product-image m-3">
             {% if product.image %}
             <img src="{{ product.image.thumbnail.500x500 }}" />
             {% else %}

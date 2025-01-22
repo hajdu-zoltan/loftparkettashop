@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'crispy_bootstrap5',
     'versatileimagefield',
     'draw',
+    'mathfilters',
 ]
 
 MIDDLEWARE = [
@@ -220,3 +221,5 @@ BARION_POS_KEY = "57b233ce-3ba1-4305-9117-1149002ec392"  # POS kulcsod
 BARION_PUBLIC_ID = "34b50e62-85f4-4fca-8d03-dff0e4d32251"  # Publikus azonosító
 BARION_PIXEL_ID = "BP-s4UecBuBU8-4A"  # Barion Pixel Azonosító
 BARION_CALLBACK_URL = "https://yourdomain.com/payment/callback/"  # Callback URL
+
+

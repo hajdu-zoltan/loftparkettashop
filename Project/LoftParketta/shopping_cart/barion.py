@@ -3,7 +3,7 @@ import requests
 from django.urls import reverse
 import logging
 
-base_url = "https://api.test.barion.com"
+base_url = "https://api.barion.com"
 POS_KEY = "57b233ce-3ba1-4305-9117-1149002ec392"
 PIXEL = "BP-s4UecBuBU8-4A"
 START_PAYMENT = base_url + "/v2/Payment/Start"
@@ -21,20 +21,20 @@ def create_payment(request, user, items, order):
         "FundingSources": ["All"],
         "PaymentRequestId": str(order.code),
         "PayerHint": order.billing_email,
-        "Locale": "en-US",
+        "Locale": "hu-HU",
         "Transactions": [
             {
-                "POSTransactionId": "trans001",
-                "Payee": "hajduzoltan2019@gmail.com",
+                "POSTransactionId": str(order.code),
+                "Payee": "loftparketta@gmail.com",
                 "Total": total,
-                "Currency": "FT",
+                "Currency": "HUF",
                 "Comment": "Test transaction",
                 "Items": items
             }
         ],
         "RedirectUrl": request.build_absolute_uri(reverse('barion_after')),
         "CallbackUrl": request.build_absolute_uri(reverse('barion_ipn')),
-        "OrderNumber": "Order12345",
+        "OrderNumber": str(order.tax_number),
         # "BillingAddress": {
         #     "Country": billing_address.country.code,
         #     "City": billing_address.city,
@@ -92,13 +92,16 @@ def process_items(items):
     barion_items = []
     price_sum = 0
     for item in items:
+        product = item['product']  # A 'Product' objektum
         new_item = {
-            "Name": item.product.name,
-            "Description": item.product.description,  # Pont operátor az attribútum eléréséhez
-            "Quantity": item.quantity,
-            "Unit": "Piece",
-            "Unit price": int(item.product.price * item.product.discount_rate) if item.product.is_discounted else int(item.product.price),
-            "ItemTotal": int((item.product.price * item.product.discount_rate) * item.quantity) if item.product.is_discounted else int(item.product.price * item.quantity),
+            "Name": product.name,  # Pont operátor az attribútum eléréséhez
+            "Description": product.description,
+            "Quantity": item['quantity'],
+            "Unit": "db",
+            "Unit price": int(product.price * product.discount_rate) if product.is_discounted else int(product.price),
+            "ItemTotal": int(
+                (product.price * product.discount_rate) * item['quantity']) if product.is_discounted else int(
+                product.price * item['quantity']),
         }
         barion_items.append(new_item)
         price_sum += int(new_item['ItemTotal'])

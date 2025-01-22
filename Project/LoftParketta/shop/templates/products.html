@@ -40,11 +40,11 @@
 <div class="container-fluid product_container">
     {% block refrence %}
     <div class="row">
-        <div class="col-md-3">
+        <div class="col-md-3 card">
             <!-- Filter Menu -->
             <form id="filters-form">
                 <div class="mb-3">
-                    <label for="category" class="form-label filter_title">Kategóriák</label>
+                    <label for="category" class="form-label filter_title fs-2">Kategóriák</label>
                     <div id="category">
                         {% for category in category_items %}
                             <div class="form-check">
@@ -54,7 +54,7 @@
                                     id="category{{ category.id }}" 
                                     name="category"
                                     {% if category.id == selected_category_id %}checked{% endif %}>
-                                <label class="form-check-label" for="category{{ category.id }}">
+                                <label class="form-check-label fs-4" for="category{{ category.id }}">
                                     {{ category.name }}
                                 </label>
                             </div>

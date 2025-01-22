@@ -17,7 +17,11 @@ class Brand(models.Model):
 class Category(models.Model):
     name = models.CharField(max_length=50)
     description = models.TextField(null=True, blank=True)
-    image = models.ImageField(upload_to='category_images/', null=True, blank=True)
+    image = VersatileImageField(
+        'Image',
+        upload_to='category_images/',
+        null=True, blank=True
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -54,7 +58,11 @@ class News(models.Model):
     title = models.CharField(max_length=200)
     content = models.TextField(null=True, blank=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, null=True, blank=True)
-    image = models.ImageField(upload_to='news_images/', null=True, blank=True)
+    image = VersatileImageField(
+        'Image',
+        upload_to='news_images/',
+        null=True, blank=True
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -85,6 +93,12 @@ class Order(models.Model):
         ('credit_card', 'Bankkártya'),
         ('bank_transfer', 'Banki átutalás'),
         ('cash_on_delivery', 'Utánvétes'),
+    ]
+
+    SHIPPING_METHOD_CHOICES = [
+        ('store_pickup', 'Boltban történő átvétel'),
+        ('home_delivery', 'Házhoz szállítás Szegeden'),
+        ('free_shipping', 'Ingyenes szállítás Szegeden belül'),
     ]
 
     user = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True)
@@ -126,6 +140,7 @@ class Order(models.Model):
     billing_city = models.CharField(max_length=100, default="N/A")  # Alapértelmezett érték
     billing_country = models.CharField(max_length=100, default="N/A")  # Alapértelmezett érték
 
+    shipping_method = models.CharField(max_length=20, choices=SHIPPING_METHOD_CHOICES, default='store_pickup')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

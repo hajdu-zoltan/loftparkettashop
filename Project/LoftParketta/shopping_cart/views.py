@@ -1,15 +1,9 @@
 from django.shortcuts import render, redirect
-from .models import CartItem
-from shop.models import Order, OrderItem, ShippingAddress
-from shop.models import Product
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import AnonymousUser
-import logging
 from decimal import Decimal
 from django.http import HttpResponseNotAllowed
-from django import forms
-from shop.forms import QuoteRequestForm, PaymentForm
 from django.views import View
 from django.contrib import messages
 from django.template.loader import render_to_string
@@ -17,13 +11,21 @@ from django.core.mail import EmailMessage
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.conf import settings
-import requests
 from django.views.decorators.csrf import csrf_exempt
+
+from .models import CartItem
+from shop.models import Order, OrderItem, ShippingAddress
+from shop.models import Product
+from shop.forms import QuoteRequestForm, PaymentForm
+
 from .barion import create_payment, get_payment_status
 from .szamlazzhu_module import SzamlazzInfo, SzamlazzItem, SzamlazzhuModule
-from django.views.decorators.csrf import csrf_exempt
-import uuid
 
+import logging
+import uuid
+import os
+import requests
+import yaml
 logger = logging.getLogger(__name__)
 cart_count = 0
 
@@ -398,6 +400,10 @@ class QuoteRequestView(View):
                 'email': form.cleaned_data['email'],
                 'phone': form.cleaned_data['phone'],
                 'message': form.cleaned_data['message'],
+                'shipping_address': form.cleaned_data['shipping_address'],
+                'shipping_country': form.cleaned_data['shipping_country'],
+                'shipping_postal_code': form.cleaned_data['shipping_postal_code'],
+                'shipping_city': form.cleaned_data['shipping_city'],
                 'cart_items': cart_items  # Kosár termékeinek átadása a cég emailhez
             })
 
@@ -448,6 +454,7 @@ class QuoteRequestView(View):
 
 
 def payment_view(request):
+    shipping_address =""
     cart_items = []
     User = get_user_model()  # User modell betöltése
     total_price = Decimal('0')
@@ -461,212 +468,224 @@ def payment_view(request):
         form = PaymentForm(request.POST)
         if form.is_valid():
 
+            shipping_cost = 0
             # Szállítási adatok kinyerése
             shipping_first_name = form.cleaned_data['shipping_first_name']
             shipping_last_name = form.cleaned_data['shipping_last_name']
             shipping_postal_code = form.cleaned_data['shipping_postal_code']
+            shipping_method = form.cleaned_data['shipping_method']
             shipping_address = form.cleaned_data['shipping_address']
-            shipping_city = form.cleaned_data['shipping_city']
-            shipping_country = form.cleaned_data['shipping_country']
+            if (int(shipping_postal_code) >= 6700 or int(shipping_postal_code) <= 6791) or shipping_method == "store_pickup":
 
-            is_company = form.cleaned_data['is_company']
-            company_name = form.cleaned_data['company_name']
-            tax_number = form.cleaned_data['tax_number']
+                if shipping_method == "store_pickup":
+                    shipping_address = "LoftParketta(Szeged, Kossuth Lajos sgrt. 49-51, 6724)"
+                elif shipping_method == "home_delivery":
+                    shipping_cost = 10000
 
-            # Számlázási adatok kinyerése
-            billing_first_name = form.cleaned_data['billing_first_name']
-            billing_last_name = form.cleaned_data['billing_last_name']
-            billing_email = form.cleaned_data['billing_email']
-            billing_phone = form.cleaned_data['billing_phone']
-            billing_postal_code = form.cleaned_data['billing_postal_code']
-            billing_address = form.cleaned_data['billing_address']
-            billing_city = form.cleaned_data['billing_city']
-            billing_country = form.cleaned_data['billing_country']
+                shipping_city = form.cleaned_data['shipping_city']
+                shipping_country = form.cleaned_data['shipping_country']
 
-            payment_method = form.cleaned_data['payment_method']
-            # Kosár adatok kinyerése
-            cart = request.session.get('cart', {})
-            total_price = Decimal('0')
-            cart_items = []
+                is_company = form.cleaned_data['is_company']
+                company_name = form.cleaned_data['company_name']
+                tax_number = form.cleaned_data['tax_number']
 
-            if isinstance(request.user, AnonymousUser):
-                for product_id, quantity in cart.items():
-                    product = get_object_or_404(Product, id=product_id)
-                    product_price = Decimal(product.price)
-                    discounted_price = product_price * (1 - (product.discount_rate / 100))
-                    total_price += discounted_price * quantity
-                    cart_items.append({
-                        'product': product,
-                        'quantity': quantity,
-                        'discounted_price': discounted_price,
-                        'total_price': discounted_price * quantity
-                    })
-            else:
-                cart_items = CartItem.objects.filter(user=request.user)
+                # Számlázási adatok kinyerése
+                billing_first_name = form.cleaned_data['billing_first_name']
+                billing_last_name = form.cleaned_data['billing_last_name']
+                billing_email = form.cleaned_data['billing_email']
+                billing_phone = form.cleaned_data['billing_phone']
+                billing_postal_code = form.cleaned_data['billing_postal_code']
+                billing_address = form.cleaned_data['billing_address']
+                billing_city = form.cleaned_data['billing_city']
+                billing_country = form.cleaned_data['billing_country']
+
+                payment_method = form.cleaned_data['payment_method']
+                # Kosár adatok kinyerése
+                cart = request.session.get('cart', {})
                 total_price = Decimal('0')
-                for item in cart_items:
-                    product = item.product
-                    product_price = Decimal(product.price)
-                    discounted_price = product_price * (1 - (product.discount_rate / 100))
-                    total_price += discounted_price * item.quantity
+                cart_items = []
 
-            # Új rendelés létrehozása
-            user = request.user if request.user.is_authenticated else None
-            guest_user_id = str(uuid.uuid4()) if not user else None  # Vendégfelhasználó azonosító generálása
-
-            # Szállítási cím létrehozása
-            shipping_address_instance = ShippingAddress.objects.create(
-                user=user,  # Felhasználó, ha be van jelentkezve
-                recipient_name=f"{shipping_first_name} {shipping_last_name}",
-                address_line1=shipping_address,
-                city=shipping_city,
-                state='',  # Ha van állam mező, állítsd be
-                postal_code=shipping_postal_code,
-                country=shipping_country,
-                phone_number=billing_phone  # A telefonszám a számlázásból
-            )
-
-            # Új rendelés létrehozása
-            order = Order.objects.create(
-                user=user,
-                guest_user_id=guest_user_id,  # Vendégfelhasználó azonosító
-                total_amount=total_price,
-                shipping_address=shipping_address_instance,
-                payment_method=payment_method,
-                billing_email=billing_email,
-                billing_phone=billing_phone,
-                billing_first_name=billing_first_name,
-                billing_last_name=billing_last_name,
-                billing_postal_code=billing_postal_code,
-                billing_address=billing_address,
-                billing_city=billing_city,
-                billing_country=billing_country,
-                is_company=is_company,
-                company_name=company_name,
-                tax_number=tax_number,
-
-            )
-
-            if payment_method == 'credit_card':
-                gateway_url, payment_id = create_payment(request, user, cart_items, order)
-                if not (gateway_url and payment_id):
-                    ...  # todo return with error
-                # todo delete cart from sesion
-
-                order.barion_id = payment_id
-                order.save()
-                if gateway_url:
-                    return redirect(gateway_url)
-
-                # Barion fizetési adatok előkészítése
-                barion_data = {
-                    "POSKey": settings.BARION_POS_KEY,
-                    "PaymentType": "Immediate",
-                    "GuestCheckOut": True,
-                    "FundingSources": ["All"],
-                    "PaymentRequestId": str(order.id),  # Egyedi rendelés ID
-                    "Locale": "hu-HU",
-                    "Transactions": [
-                        {
-                            "POSTransactionId": str(order.id),
-                            "Payee": settings.BARION_PUBLIC_ID,
-                            "Total": str(total_price),
-                            "Items": [
-                                {
-                                    "Name": item['product'].name,
-                                    "Description": item['product'].description,
-                                    "Quantity": item['quantity'],
-                                    "Unit": "piece",
-                                    "UnitPrice": str(item['discounted_price']),
-                                    "ItemTotal": str(item['total_price']),
-                                    "SKU": item['product'].sku,
-                                }
-                                for item in cart_items
-                            ]
-                        }
-                    ],
-                    "RedirectUrl": request.build_absolute_uri(reverse('payment_success')),
-                    "CallbackUrl": settings.BARION_CALLBACK_URL
-                }
-
-                # Barion kérés küldése
-                response = requests.post(
-                    settings.BARION_API_URL,
-                    json=barion_data
-                )
-                if response.status_code == 200:
-                    barion_response = response.json()
-                    if barion_response.get("Status") == "Prepared":
-                        payment_url = barion_response["GatewayUrl"]
-                        return JsonResponse({"redirect_url": payment_url})
-                    else:
-                        return JsonResponse({"error": "Barion payment preparation failed."})
+                if isinstance(request.user, AnonymousUser):
+                    for product_id, quantity in cart.items():
+                        product = get_object_or_404(Product, id=product_id)
+                        product_price = Decimal(product.price)
+                        discounted_price = product_price * (1 - (product.discount_rate / 100))
+                        total_price += discounted_price * quantity
+                        cart_items.append({
+                            'product': product,
+                            'quantity': quantity,
+                            'discounted_price': discounted_price,
+                            'total_price': discounted_price * quantity
+                        })
                 else:
-                    return JsonResponse({"error": "Error communicating with Barion."})
+                    cart_items = CartItem.objects.filter(user=request.user)
+                    total_price = Decimal('0')
+                    for item in cart_items:
+                        product = item.product
+                        product_price = Decimal(product.price)
+                        discounted_price = product_price * (1 - (product.discount_rate / 100))
+                        total_price += discounted_price * item.quantity
 
-            # Kosár elemeinek rögzítése
-            for item in cart_items:
-                if isinstance(item, dict):  # Névtelen felhasználó esetén a kosár elemek dictionary formában vannak
-                    product = item['product']
-                    quantity = item['quantity']
-                    discounted_price = item['discounted_price']
-                    total_price = item['total_price']
-                else:  # Bejelentkezett felhasználó esetén a kosár elemek CartItem objektumok
-                    product = item.product
-                    quantity = item.quantity
-                    discounted_price = Decimal(product.price) * (1 - (product.discount_rate / 100))
-                    total_price = discounted_price * quantity
+                # Új rendelés létrehozása
+                user = request.user if request.user.is_authenticated else None
+                guest_user_id = str(uuid.uuid4()) if not user else None  # Vendégfelhasználó azonosító generálása
 
-                order_item = OrderItem(
-                    order=order,
-                    product=product,
-                    quantity=quantity,
-                    unit_price=discounted_price,
-                    total_price=total_price,
+                # Szállítási cím létrehozása
+                shipping_address_instance = ShippingAddress.objects.create(
+                    user=user,  # Felhasználó, ha be van jelentkezve
+                    recipient_name=f"{shipping_first_name} {shipping_last_name}",
+                    address_line1=shipping_address,
+                    city=shipping_city,
+                    state='',  # Ha van állam mező, állítsd be
+                    postal_code=shipping_postal_code,
+                    country=shipping_country,
+                    phone_number=billing_phone  # A telefonszám a számlázásból
                 )
-                order_item.save()  # Mentés az adatbázisba
 
-            # Kosár ürítése
-            if request.user.is_authenticated:
-                # Bejelentkezett felhasználó esetén
-                try:
-                    CartItem.objects.filter(user=request.user).delete()
-                except Exception as e:
-                    logger.error(f"Error while clearing cart for user {request.user}: {e}")
-            else:
-                # Névtelen felhasználó esetén, kosár tárolása a session-ben
-                request.session['cart'] = {}  # Teljesen töröljük a kosár tartalmát
+                # Új rendelés létrehozása
+                order = Order.objects.create(
+                    user=user,
+                    guest_user_id=guest_user_id,  # Vendégfelhasználó azonosító
+                    total_amount=total_price+shipping_cost,
+                    shipping_address=shipping_address_instance,
+                    shipping_method=shipping_method,
+                    payment_method=payment_method,
+                    billing_email=billing_email,
+                    billing_phone=billing_phone,
+                    billing_first_name=billing_first_name,
+                    billing_last_name=billing_last_name,
+                    billing_postal_code=billing_postal_code,
+                    billing_address=billing_address,
+                    billing_city=billing_city,
+                    billing_country=billing_country,
+                    is_company=is_company,
+                    company_name=company_name,
+                    tax_number=tax_number,
 
-            # Email küldés
-            if order.guest_user_id:
-                status_url = f"{settings.SITE_URL}{reverse('shopping_cart:order_status_guest', args=[order.id, order.guest_user_id])}"
-            else:
-                status_url = f"{settings.SITE_URL}{reverse('shopping_cart:order_status', args=[order.id])}"
+                )
 
-            cart_items = OrderItem.objects.filter(order=order)
+                if payment_method == 'credit_card':
+                    gateway_url, payment_id = create_payment(request, user, cart_items, order)
+                    if not (gateway_url and payment_id):
+                        ...  # todo return with error
+                    # todo delete cart from sesion
 
-            # Email sablon renderelése a változókkal
-            message_to_user = render_to_string('order_status_email.html', {
-                'username': order.user.username if order.user else 'Vendég',  # Ha vendég a felhasználó
-                'order': order,
-                'cart_items': cart_items,  # Kosár tartalmának átadása
-                'status_url': status_url  # URL átadása az email sablonnak
-            })
+                    order.barion_id = payment_id
+                    order.save()
+                    if gateway_url:
+                        return redirect(gateway_url)
 
-            # Email küldés beállítása
-            email_to_user = EmailMessage(
-                'Rendelés állapota frissítve',
-                message_to_user,
-                to=[billing_email],  # Címzett email cím
-            )
-            email_to_user.content_subtype = 'html'  # HTML formátum
-            email_to_user.send()
+                    # Barion fizetési adatok előkészítése
+                    barion_data = {
+                        "POSKey": settings.BARION_POS_KEY,
+                        "PaymentType": "Immediate",
+                        "GuestCheckOut": True,
+                        "FundingSources": ["All"],
+                        "PaymentRequestId": str(order.id),  # Egyedi rendelés ID
+                        "Locale": "hu-HU",
+                        "Transactions": [
+                            {
+                                "POSTransactionId": str(order.id),
+                                "Payee": settings.BARION_PUBLIC_ID,
+                                "Total": str(total_price),
+                                "Items": [
+                                    {
+                                        "Name": item['product'].name,
+                                        "Description": item['product'].description,
+                                        "Quantity": item['quantity'],
+                                        "Unit": "piece",
+                                        "UnitPrice": str(item['discounted_price']),
+                                        "ItemTotal": str(item['total_price']),
+                                        "SKU": item['product'].sku,
+                                    }
+                                    for item in cart_items
+                                ]
+                            }
+                        ],
+                        "RedirectUrl": request.build_absolute_uri(reverse('payment_success')),
+                        "CallbackUrl": settings.BARION_CALLBACK_URL
+                    }
 
-            # Átirányítás a sikeres rendelés oldalára
-            return render(request, 'success.html', {
-                'email': billing_email,
-                'payment_method': payment_method
-            })
+                    # Barion kérés küldése
+                    response = requests.post(
+                        settings.BARION_API_URL,
+                        json=barion_data
+                    )
+                    if response.status_code == 200:
+                        barion_response = response.json()
+                        if barion_response.get("Status") == "Prepared":
+                            payment_url = barion_response["GatewayUrl"]
+                            return JsonResponse({"redirect_url": payment_url})
+                        else:
+                            return JsonResponse({"error": "Barion payment preparation failed."})
+                    else:
+                        return JsonResponse({"error": "Error communicating with Barion."})
+
+                # Kosár elemeinek rögzítése
+                for item in cart_items:
+                    if isinstance(item, dict):  # Névtelen felhasználó esetén a kosár elemek dictionary formában vannak
+                        product = item['product']
+                        quantity = item['quantity']
+                        discounted_price = item['discounted_price']
+                        total_price = item['total_price']
+                    else:  # Bejelentkezett felhasználó esetén a kosár elemek CartItem objektumok
+                        product = item.product
+                        quantity = item.quantity
+                        discounted_price = Decimal(product.price) * (1 - (product.discount_rate / 100))
+                        total_price = discounted_price * quantity
+
+                    order_item = OrderItem(
+                        order=order,
+                        product=product,
+                        quantity=quantity,
+                        unit_price=discounted_price,
+                        total_price=total_price,
+                    )
+                    order_item.save()  # Mentés az adatbázisba
+
+                # Kosár ürítése
+                if request.user.is_authenticated:
+                    # Bejelentkezett felhasználó esetén
+                    try:
+                        CartItem.objects.filter(user=request.user).delete()
+                    except Exception as e:
+                        logger.error(f"Error while clearing cart for user {request.user}: {e}")
+                else:
+                    # Névtelen felhasználó esetén, kosár tárolása a session-ben
+                    request.session['cart'] = {}  # Teljesen töröljük a kosár tartalmát
+
+                # Email küldés
+                if order.guest_user_id:
+                    status_url = f"{settings.SITE_URL}{reverse('shopping_cart:order_status_guest', args=[order.id, order.guest_user_id])}"
+                else:
+                    status_url = f"{settings.SITE_URL}{reverse('shopping_cart:order_status', args=[order.id])}"
+
+                cart_items = OrderItem.objects.filter(order=order)
+
+                # Email sablon renderelése a változókkal
+                message_to_user = render_to_string('order_status_email.html', {
+                    'username': order.user.username if order.user else 'Vendég',  # Ha vendég a felhasználó
+                    'order': order,
+                    'cart_items': cart_items,  # Kosár tartalmának átadása
+                    'status_url': status_url  # URL átadása az email sablonnak
+                })
+
+                # Email küldés beállítása
+                email_to_user = EmailMessage(
+                    'Rendelés állapota frissítve',
+                    message_to_user,
+                    to=[billing_email],  # Címzett email cím
+                )
+                email_to_user.content_subtype = 'html'  # HTML formátum
+                email_to_user.send()
+
+                #create_invoice(order)
+
+                # Átirányítás a sikeres rendelés oldalára
+                return render(request, 'success.html', {
+                    'email': billing_email,
+                    'payment_method': payment_method
+                })
 
     else:
         form = PaymentForm()
@@ -871,3 +890,49 @@ def check_vat(request):
             return JsonResponse({'error': 'Invalid JSON format'}, status=400)
     else:
         return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+def create_invoice(order):
+    logger = logging.getLogger('django')
+    user = order.user
+    szamlazz_info = SzamlazzInfo()
+    szamlazz_info.buyer_name = order.billing_last_name + " " + order.billing_first_name
+    szamlazz_info.buyer_post_code = order.billing_postal_code
+    szamlazz_info.buyer_city = order.billing_city
+    szamlazz_info.buyer_address = order.billing_address
+    szamlazz_info.comment = ""
+    szamlazz_info.buyer_tax_number = order.tax_number
+    szamlazz_info.buyer_email = order.billing_email
+    if order.payment_method == 'redit_card':
+        szamlazz_info.payment_type = "Bankkártyás vásárlás"
+    elif order.payment_method == 'bank_transfer':
+        szamlazz_info.payment_type = "Átutalás"
+    szamlazz_info.order_number = order.code
+    print("Szamlazz info", szamlazz_info)
+    tax = 27 / 100
+    cart_items = OrderItem.objects.filter(order=order).all()
+    for item in cart_items:
+        netto_price = round((int(item.total_price) / (1 + tax)), 2)
+        tax_content = round(int(item.total_price) - netto_price, 2)
+        brutto_price = int(item.total_price)
+        szamlazz_item = SzamlazzItem(item.product.name, 1, netto_price, netto_price, tax_content, brutto_price, vat_key=int(tax * 100))
+        szamlazz_info.items.append(szamlazz_item)
+
+    # Elküldi a számlakészítési igényt
+    szamlazz_result = SzamlazzhuModule(get_invoice_cnf()["szamlazz_agent"]).create_invoice(szamlazz_info)
+    print(f"Számlázz válasz adatok: {szamlazz_result}")
+
+    if szamlazz_result[0] is True:
+        logger.info(f'Invoice created {szamlazz_result}')
+        order.invoice_num = szamlazz_result[1]
+        order.invoice_url = szamlazz_result[2]
+        order.save()
+        return True
+    logger.error("Erorr while creating invoice")
+    return False
+
+
+def get_invoice_cnf(filename='invoice_config.yaml'):
+    script_dir = os.path.dirname(__file__)
+    file_path = os.path.join(script_dir, filename)
+    with open(file_path, 'r') as file:
+        return yaml.safe_load(file)

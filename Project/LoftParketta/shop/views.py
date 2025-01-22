@@ -8,6 +8,8 @@ from django.shortcuts import redirect
 import json
 from django.contrib.auth.decorators import login_required
 #from cart.cart import Cart
+from shopping_cart.models import CartItem
+from django.contrib.auth.models import AnonymousUser
 
 from django.contrib.auth.models import User
 # from .forms import FormWithCaptcha
@@ -28,7 +30,7 @@ from django.core.mail import EmailMultiAlternatives
 
 from django.contrib.auth.models import User
 
-
+cart_count = 0
 def home(request):
     news_items = News.objects.all()
     category_items = Category.objects.all()
@@ -49,14 +51,15 @@ def home(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     actual_page = 'home'
+    cart_count = get_cart_count(request)
     return render(request, 'home.html', {
         'news_items': news_items,
         'category_items': category_items,
         'page_obj': page_obj,
         'actual_page': actual_page,
+        'cart_count': cart_count,
         'top_product_items': top_product_items
     })
-
 
 def product_list(request):
     page_number = request.GET.get('page', 1)
@@ -68,6 +71,7 @@ def product_list(request):
     except EmptyPage:
         products = paginator.page(paginator.num_pages)
     actual_page = 'products'
+    cart_count = CartItem.objects.filter(user=request.user).count()
     products_data = {
         'products': [
             {
@@ -85,6 +89,7 @@ def product_list(request):
         'has_next': products.has_next(),
         'has_previous': products.has_previous(),
         'total_pages': paginator.num_pages,
+        'cart_count': cart_count,
         'actual_page': actual_page
     }
 
@@ -154,11 +159,13 @@ def product_list_all(request, category_id=None):
         product.discounted_price = product.price * (1 - (product.discount_rate / 100))
     # Termékadatok előkészítése JSON válaszhoz
     actual_page = 'products'
+    cart_count = CartItem.objects.filter(user=request.user).count()
     products_data = {
         'products': product_items,
         'has_next': products.has_next(),
         'has_previous': products.has_previous(),
         'total_pages': paginator.num_pages,
+        'cart_count': cart_count,
         'actual_page': actual_page
     }
 
@@ -230,11 +237,13 @@ def product_list_all_category_select(request, category_id=None):
     except EmptyPage:
         page_obj = paginator.page(paginator.num_pages)
     actual_page = 'products'
+    cart_count = get_cart_count(request)
     context = {
         'page_obj': page_obj,              # A paginált termékek
         'product_items': product_items,    # Az összes szűrt termék
         'category_items': Category.objects.all(),
         'selected_category_id': category_id,
+        'cart_count': cart_count,
         'actual_page': actual_page
     }
 
@@ -252,7 +261,7 @@ def products(request):
     price_max = request.GET.get('price_max')
     order_by = request.GET.get('order_by', 'name')
     order_dir = request.GET.get('order_dir', 'asc')
-
+    cart_count = 0
     # Alapértelmezett lekérdezés
     product_items = Product.objects.all()
 
@@ -296,6 +305,7 @@ def products(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     actual_page = 'products'
+    cart_count = get_cart_count(request)
     context = {
         'page_obj': page_obj,
         'category_items': Category.objects.all(),
@@ -305,6 +315,7 @@ def products(request):
         'price_max': price_max,
         'selected_order_by': order_by,
         'selected_order_dir': order_dir,
+        'cart_count': cart_count,
         'actual_page': actual_page
     }
 
@@ -348,11 +359,13 @@ def product_detail(request, product_id):
         # Ha túl nagy az oldalszám, akkor az utolsó oldalt jelenítsük meg
         page_obj = paginator.page(paginator.num_pages)
 
+    cart_count = get_cart_count(request)
     context = {
         'product': product,
         'quantity': quantity,
         'total_price': total_price,
         'related_products': page_obj,
+        'cart_count': cart_count
     }
     return render(request, 'product_detail.html', context)
 
@@ -393,6 +406,7 @@ def search(request):
         'price_max': None,
         'selected_order_by': 'name',
         'selected_order_dir': 'asc',
+        'cart_count': cart_count,
         'actual_page': 'products',
         'query': query,  # Ezt is átadjuk a keresési kifejezés megjelenítéséhez
     }
@@ -408,3 +422,44 @@ def aszf(request):
 
 def privacy_policy(request):
     return render(request, 'privacy_policy.html')
+
+def get_cart_count(request):
+    cart_count = 0
+    if isinstance(request.user, AnonymousUser):
+        # Névtelen felhasználó esetén: kosár tárolása a session-ben
+        cart = request.session.get('cart', {})
+        if not isinstance(cart, dict):  # Biztosítjuk, hogy a kosár dictionary típusú legyen
+            cart = {}
+            request.session['cart'] = cart
+
+        cart_items = []
+        total_price = Decimal('0')
+
+        for product_id, quantity in cart.items():
+            # Ellenőrizzük, hogy a mennyiség egész szám legyen
+            if not isinstance(quantity, int):
+                try:
+                    quantity = int(quantity)
+                except (ValueError, TypeError):
+                    quantity = 0  # Hibás érték esetén kihagyjuk
+                    continue
+
+            # Töltjük a termékinformációkat
+            try:
+                product = get_object_or_404(Product, id=product_id)
+                product_price = Decimal(product.price)
+                discounted_price = product_price * (1 - (product.discount_rate / 100))
+                cart_items.append({
+                    'product': product,
+                    'discounted_price': discounted_price,
+                    'quantity': quantity,
+                    'total_price': discounted_price * quantity
+                })
+                total_price += discounted_price * quantity
+            except Product.DoesNotExist:
+                continue  # Ha a termék nem található, kihagyjuk
+
+            cart_count = len(cart_items)
+    else:
+        cart_count = CartItem.objects.filter(user=request.user).count()
+    return cart_count

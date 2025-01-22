@@ -2,7 +2,7 @@
 
 {% block content %}
 {% load static %}
-<style>
+<style xmlns="http://www.w3.org/1999/html">
     .progress-container {
         display: flex;
         justify-content: space-between;
@@ -44,7 +44,7 @@
 
 </style>
 
-<div class="container d-flex justify-content-center align-items-center vh-100">
+<div class="container d-flex justify-content-center align-items-center vh-100 mt-5 mb-5">
     <form action="{% url 'shopping_cart:payment' %}" method="POST" class="" id="checkoutForm">
         {% csrf_token %}
 
@@ -60,7 +60,7 @@
             </div>
             <div class="step">
                 <div class="circle">3</div>
-                <div class="label">Fizetés</div>
+                <div class="label">Összegzés</div>
             </div>
         </div>
 
@@ -151,7 +151,7 @@
                     </div>
                     <div class="form-group col-md-6">
                         <label for="shipping_postal_code">Irányítószám:</label>
-                        <input type="text" id="shipping_postal_code" name="shipping_postal_code" class="form-control" required>
+                        <input type="text" id="shipping_postal_code" onchange="onInputChange_PostalCode()" name="shipping_postal_code" class="form-control" required>
                     </div>
                     <div class="form-group col-md-6">
                         <label for="shipping_city">Város:</label>
@@ -159,9 +159,9 @@
                     </div>
                     <div class="form-group col-md-12">
                         <label for="shipping_method">Szállítási mód:</label>
-                        <select id="shipping_method" name="shipping_method" class="form-control" required>
-                            <option value="free_shipping">Ingyenes szállítás Szegeden belül 50.000 Ft feletti vásárlás esetén.</option>
-                            <option value="home_delivery">Házhoz szállítás</option>
+                        <select id="shipping_method" name="shipping_method" onchange="handleOptionChange()" class="form-control" required>
+                            <option disabled="disabled" id="free_shipping" value="free_shipping">Ingyenes szállítás Szegeden belül 50.000 Ft feletti vásárlás esetén.</option>
+                            <option disabled="disabled" id="home_delivery" value="home_delivery">Házhoz szállítás Szegeden 10.000Ft</option>
                             <option value="store_pickup">Boltban történő átvétel</option>
                         </select>
                     </div>
@@ -171,10 +171,8 @@
                 <!-- Lépés 3: Fizetés -->
         <div id="step3" class="step-content" style="display:none;">
             <div class="card shadow-0 border p-4">
-                <h3 class="text-center">Szállítási adatok</h3>
+                <h3 class="text-center">Összegzés</h3>
                 <div class="row">
-
-                <h3 class="text-center">Kosár adatai</h3>
                 <div id="cart-items-section" class="form-group mt-3">
                     <h4>Kosárban lévő termékek</h4>
                     <ul class="list-group">
@@ -182,7 +180,7 @@
                         <li class="list-group-item">
                             <a class="nav-link" href="{% url 'shop:product_detail' item.product.id %}" target="_blank">
                                 <img src="{{ item.product.image.url }}" class="img-thumbnail mr-3" alt="{{ item.product.name }}" style="width: 50px; height: 50px;">
-                                {{ item.product.name }}<br> {{ item.quantity }} db = {{ item.discounted_price | floatformat:0 }} Ft
+                                {{ item.product.name }} {{ item.quantity }} db
                             </a>
                         </li>
                         {% endfor %}
@@ -190,11 +188,29 @@
                 </div>
                 <div class="d-flex justify-content-between">
                     <p class="mb-2">Szállítási költség:</p>
-                    <p class="mb-2" id="shipping-cost">0 Ft</p>
+                    <p class="mb-2">
+                        <b id="shipping-cost">0</b>
+                        <b>Ft</b>
+                    </p>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <p class="mb-2">Termékek összesen (nettó):</p>
+                    <p class="mb-2">
+                        <b id="price">{{ total_price  | floatformat:0}}</b>
+                        <b>Ft</b>
+                    </p>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <p class="mb-2">Áfa tartalom:</p>
+                    {% load mathfilters %}
+                    <p class="mb-2 text-success" id="vat">-{{ total_price|floatformat:0|mul:0.27 }} Ft</p>
                 </div>
                 <div class="d-flex justify-content-between">
                     <h5 class="mb-0">Összesen:</h5>
-                    <h5 class="mb-0" id="total-price">{{ total_price  | floatformat:0}} Ft</h5>
+                    <h5 class="mb-0">
+                        <b id="total-price">{{ total_price  | floatformat:0}}</b>
+                        <b>Ft</b>
+                    </h5>
                 </div>
                 <div class="form-group mt-3">
                     <label for="payment_method">Fizetési mód:</label>
@@ -223,9 +239,78 @@
             <button type="submit" class="btn btn-success" id="submitBtn" style="display:none;">Fizetés</button>
         </div>
     </form>
+    <div class="modal" id="dialog" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLongTitle">Egyedi árajánlat szükséges</h5>
+          </div>
+          <div class="modal-body">
+              <p>Sajnáljuk, de a megadott szállítási címre jelenleg csak egyedi árajánlat keretében tudunk szállítást biztosítani.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" onclick="dialogClose()" class="btn btn-secondary" data-dismiss="modal">Mégse</button>
+            <a href="{% url 'shopping_cart:quote_request' %}" class="btn btn-dark w-30 border mt-2"> Árajánlat kérés </a>
+          </div>
+        </div>
+      </div>
+    </div>
 </div>
 
 <script>
+     function onInputChange_PostalCode() {
+          const shipping_postal_code = document.getElementById("shipping_postal_code").value; // Az input mező aktuális értéke
+          if(shipping_postal_code >= 6700 && shipping_postal_code <= 6791)
+          {
+            if({{total_price  | floatformat:0}} >= 50000)
+            {
+                document.getElementById("free_shipping").disabled = false;
+            }
+            else{
+                document.getElementById("home_delivery").disabled = false;
+            }
+          }
+          else{
+            document.getElementById("free_shipping").disabled = true;
+            document.getElementById("home_delivery").disabled = true;
+            document.getElementById("dialog").style.display = "block";
+          }
+    }
+
+    function handleOptionChange() {
+      const selectedOption = document.getElementById("shipping_method").value;
+      if (selectedOption === "home_delivery") {
+        Click_home_delivery(10000);
+      }
+      else{
+       Click_home_delivery(0);
+      }
+    }
+
+    function dialogClose(){
+     document.getElementById("dialog").style.display = "none";
+    }
+
+    function Click_home_delivery(shipping_cost) {
+    console.log(shipping_cost);
+    // Szállítási költség beállítása
+    document.getElementById("shipping-cost").textContent = shipping_cost;
+
+
+    // Teljes ár lekérése és konvertálása számra
+    let total_price = parseInt(document.getElementById("price").textContent, 10) || 0;
+
+    // Új teljes ár kiszámítása
+    let new_total_price = shipping_cost + total_price;
+
+    // Új teljes ár megjelenítése
+    document.getElementById("total-price").textContent = new_total_price + " Ft";
+
+    let new_vat = (new_total_price *0.27)
+    document.getElementById("vat").textContent = new_vat + " Ft";
+}
+
+
 
     document.getElementById('checkoutForm').addEventListener('submit', function (event) {
         const acceptTerms = document.getElementById('acceptTerms');
