@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="alert alert-success text-center" role="alert">
+        <h1>Megrendelés sikertelen!</h1>
+        <p>Kérjük, tenkintse át adatit és probálja meg ismét.</p>
+        <a href="{% url 'shopping_cart:payment' %}" class="btn btn-primary">Vissza a főoldalra</a>
+    </div>
+</div>
+
+{% endblock %}

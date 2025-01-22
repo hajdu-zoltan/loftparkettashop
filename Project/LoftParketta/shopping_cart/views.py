@@ -822,10 +822,7 @@ def order_status_guest_view(request, order_id, guest_user_id):
 @csrf_exempt
 def barion_after(request):
     if request.method == 'GET':
-        payment_id = request.GET.get('paymentId', None)
-        customer_cart = CustomerCart.objects.get(barion_id=payment_id)
-        status = '' if not customer_cart.barion_status else customer_cart.barion_status
-        return render(request, 'booking/after_payment.html', {"status": _(status), "appointment_code": str(customer_cart.code), "barion_id": payment_id})
+        return render(request, 'not_success.html')
 
 def payment_status(request, payment_id):
     customer_cart = Order.objects.filter(barion_id=payment_id).first()
