@@ -147,7 +147,7 @@
         <!-- Előző oldal gomb -->
         {% if page_obj.has_previous %}
         <li class="page-item">
-            <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if selected_category_id %}&category={{ selected_category_id }}{% endif %}{% if selected_stars %}&stars={{ selected_stars }}{% endif %}{% if price_min %}&price_min={{ price_min }}{% endif %}{% if price_max %}&price_max={{ price_max }}{% endif %}{% if selected_order_by %}&order_by={{ selected_order_by }}{% endif %}" aria-label="Previous">
                 <span aria-hidden="true">&laquo;</span>
             </a>
         </li>
@@ -161,7 +161,7 @@
             </li>
             {% else %}
             <li class="page-item">
-                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                <a class="page-link" href="?page={{ num }}{% if selected_category_id %}&category={{ selected_category_id }}{% endif %}{% if selected_stars %}&stars={{ selected_stars }}{% endif %}{% if price_min %}&price_min={{ price_min }}{% endif %}{% if price_max %}&price_max={{ price_max }}{% endif %}{% if selected_order_by %}&order_by={{ selected_order_by }}{% endif %}">{{ num }}</a>
             </li>
             {% endif %}
         {% endfor %}
@@ -169,13 +169,14 @@
         <!-- Következő oldal gomb -->
         {% if page_obj.has_next %}
         <li class="page-item">
-            <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if selected_category_id %}&category={{ selected_category_id }}{% endif %}{% if selected_stars %}&stars={{ selected_stars }}{% endif %}{% if price_min %}&price_min={{ price_min }}{% endif %}{% if price_max %}&price_max={{ price_max }}{% endif %}{% if selected_order_by %}&order_by={{ selected_order_by }}{% endif %}" aria-label="Next">
                 <span aria-hidden="true">&raquo;</span>
             </a>
         </li>
         {% endif %}
     </ul>
 </nav>
+
 
 
         </div>
