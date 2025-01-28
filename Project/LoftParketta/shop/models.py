@@ -2,6 +2,7 @@ from django.db import models
 from users.models import CustomUser
 from django.utils import timezone
 from versatileimagefield.fields import VersatileImageField
+from ckeditor.fields import RichTextField
 
 import uuid
 
@@ -32,13 +33,13 @@ class Category(models.Model):
 class Product(models.Model):
     name = models.CharField(max_length=100)
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    description = models.TextField(null=True, blank=True)
-    sort_description = models.TextField(null=True, blank=True)
+    description = RichTextField(null=True, blank=True)
+    sort_description = RichTextField(null=True, blank=True)
     is_discounted = models.BooleanField(default=False)
     discount_rate = models.DecimalField(max_digits=5, decimal_places=2, default=0.00)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
     brand = models.ForeignKey(Brand, on_delete=models.SET_NULL, null=True, blank=True)
-    popularity = models.IntegerField(default=0)
+    popularity = models.BooleanField(default=False)
     rating = models.DecimalField(max_digits=3, decimal_places=2, default=0.00)
     # image = VersatileImageField(upload_to='product_images/', null=True, blank=True)
     image = VersatileImageField(

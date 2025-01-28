@@ -41,3 +41,21 @@
     object-fit: contain; /* Ensure image fits within the container */
     object-position: center;
 }
+
+h3{
+    margin-top: 1vh !important;
+    font-size: 1.5rem !important;
+}
+
+p{
+    line-height: 1.5rem !important;
+    font-size: 1rem !important;
+}
+
+ul{
+     font-size: 1.2rem !important;
+     margin-bottom: 1vh !important;
+}
+ .tab-content .mt-5 {
+ margin-top: 1px !important;
+ }

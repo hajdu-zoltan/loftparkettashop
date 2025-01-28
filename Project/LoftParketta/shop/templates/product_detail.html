@@ -61,14 +61,14 @@
                     <span class="price-final">{{ product.price|floatformat:0  }} Ft</span>
                 {% endif %}
             </div>
-            <div class="rating mb-3">
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star-half-alt"></i>
-                <span>(4.6/5)</span>
-            </div>
+<!--            <div class="rating mb-3">-->
+<!--                <i class="fas fa-star"></i>-->
+<!--                <i class="fas fa-star"></i>-->
+<!--                <i class="fas fa-star"></i>-->
+<!--                <i class="fas fa-star"></i>-->
+<!--                <i class="fas fa-star-half-alt"></i>-->
+<!--                <span>(4.6/5)</span>-->
+<!--            </div>-->
             <!-- Tabok: Leírás, Specifikációk, Vélemények -->
       <button class="btn btn-light  active " id="descriptionBtn" onclick="toggleDescription()">Leírás</button>
             <button class="btn btn-light "  id="specificationBtn" onclick="toggleSpecification()">Specifikációk</button>
@@ -79,14 +79,14 @@
             <div id="description-content" style="margin-top: 20px;">
                 <h3>Leírás</h3>
                 <p>
-                    {{ product.sort_description|linebreaks }}
+                    {{ product.sort_description|safe }}
                 </p>
             </div>
 
             <!-- Specifikációk tartalom -->
             <div id="specification-content" style="display: none; margin-top: 20px;">
                 <h3>Specifikációk</h3>
-                {{ product.description|linebreaks }}
+                {{ product.description|safe }}
             </div>
         </div>
         <div class="row">

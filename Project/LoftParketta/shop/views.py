@@ -35,7 +35,7 @@ def home(request):
     news_items = News.objects.all()
     category_items = Category.objects.all()
     product_items = Product.objects.filter(is_discounted=True)
-    top_product_items = Product.objects.filter(is_discounted=True).order_by('id')[:10]
+    top_product_items = Product.objects.filter(popularity=True).order_by('id')[:10]
     for product in product_items:
         product.discounted_price = product.price * (1 - (product.discount_rate / 100))
 

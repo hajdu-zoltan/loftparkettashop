@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'versatileimagefield',
     'draw',
     'mathfilters',
+    'ckeditor',
 ]
 
 MIDDLEWARE = [
