@@ -3,16 +3,21 @@
 <link rel="stylesheet" href="{% static 'css/popular_products.css' %}">
 
 <div class="card card-product">
+    {% if product.stock > 0 %}
+        <div class="ribbon m-2 rounded-pill bg-success">Készleten</div>
+    {% endif %}
     {% if product.is_discounted %}
     <div class="badge-discount">-{{ product.discount_rate|floatformat:0  }}%</div>
     {% endif %}
     <a class="nav-link" href="{% url 'shop:product_detail' product.id %}">
         <div class="product-image m-3">
+             <div class="img_body">
             {% if product.image %}
             <img src="{{ product.image.thumbnail.500x500 }}" />
             {% else %}
             <img src="{% static 'images/placeholder.png' %}" alt="Placeholder Image">
             {% endif %}
+             </div>
         </div>
     </a>
     <div class="card-body d-flex flex-column justify-content-between">

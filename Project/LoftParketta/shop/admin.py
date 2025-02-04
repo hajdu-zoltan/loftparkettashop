@@ -28,9 +28,25 @@ class OrderAdmin(admin.ModelAdmin):
 
 # A többi modell regisztrálása az admin felületre
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('name', 'price', 'is_discounted', 'category', 'brand', 'rating', 'popularity')
-    list_filter = ('category', 'brand', 'is_discounted')
-    search_fields = ('name',)
+    list_display = ("name", "price", "stock", "is_active")
+    list_filter = ("is_active", "is_discounted", "category", "brand")
+    search_fields = ("name", "description")
+    ordering = ("name",)
+
+    fieldsets = (
+        ("Készlet", {
+            "fields": ("stock", "is_active")
+        }),
+        ("Általános információk", {
+            "fields": ("name", "description", "sort_description", "category", "brand")
+        }),
+        ("Árazás", {
+            "fields": ("price", "is_discounted", "discount_rate")
+        }),
+        ("Média", {
+            "fields": ("image", "link")
+        }),
+    )
 
 
 admin.site.register(Brand)

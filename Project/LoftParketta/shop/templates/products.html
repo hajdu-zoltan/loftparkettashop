@@ -40,18 +40,34 @@
 <div class="container-fluid product_container">
     {% block refrence %}
     <div class="row">
-        <div class="col-md-3 card">
+        <div class="col-md-3 card" id="sidebar-card">
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+               <button class="btn btn-link mb-5 mt-5 float-end" id="toggle-filters-btn" onclick="hidden_filters_onclick()" type="button">
+                <span id="collapseIcon">
+                    <svg xmlns="http://www.w3.org/2000/svg" id="left_arrow" width="30" height="30" fill="currentColor" class="bi bi-box-arrow-left" viewBox="0 0 16 16">
+                      <path fill-rule="evenodd" d="M6 12.5a.5.5 0 0 0 .5.5h8a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5h-8a.5.5 0 0 0-.5.5v2a.5.5 0 0 1-1 0v-2A1.5 1.5 0 0 1 6.5 2h8A1.5 1.5 0 0 1 16 3.5v9a1.5 1.5 0 0 1-1.5 1.5h-8A1.5 1.5 0 0 1 5 12.5v-2a.5.5 0 0 1 1 0z"/>
+                      <path fill-rule="evenodd" d="M.146 8.354a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L1.707 7.5H10.5a.5.5 0 0 1 0 1H1.707l2.147 2.146a.5.5 0 0 1-.708.708z"/>
+                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" style="display:none" id="right_arrow" width="30" height="30" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
+                      <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0z"/>
+                      <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708z"/>
+                    </svg>
+                </span>
+            </button>
+            </div>
+
             <!-- Filter Menu -->
-            <form id="filters-form">
+            <div id="sidebar-container" style="display:block">
+                <form id="filters-form">
                 <div class="mb-3">
                     <label for="category" class="form-label filter_title fs-2">Kategóriák</label>
                     <div id="category">
                         {% for category in category_items %}
                             <div class="form-check">
-                                <input class="form-check-input" 
-                                    type="radio" 
-                                    value="{{ category.id }}" 
-                                    id="category{{ category.id }}" 
+                                <input class="form-check-input"
+                                    type="radio"
+                                    value="{{ category.id }}"
+                                    id="category{{ category.id }}"
                                     name="category"
                                     {% if category.id == selected_category_id %}checked{% endif %}>
                                 <label class="form-check-label fs-4" for="category{{ category.id }}">
@@ -63,9 +79,9 @@
                 </div>
                 <div class="mb-3">
                     <label for="price_range" class="form-label filter_title">Szűrés ár alapján</label>
-                    <input type="range" id="price_range" class="form-range" 
-                           min="0" max="100000" 
-                           step="1000" 
+                    <input type="range" id="price_range" class="form-range"
+                           min="0" max="100000"
+                           step="1000"
                            value="{{ price_max }}"
                            data-min="0" data-max="100000">
                     <div id="price_range_display">
@@ -77,8 +93,8 @@
                 <div class="d-grid gap-2 col-4 ">
                     <button type="submit" class="btn btn-success btn-submit ">Alkalmazás</button>
                 </div>
-                
-                      
+
+
                 <div class="mb-3" style="display: none;">
                     <label for="stars" class="form-label filter_title">Stars</label>
                     <div id="stars">
@@ -133,8 +149,9 @@
                     <button type="button" class="btn btn-success btn-remove "><a class="btn-remove" href="{% url 'shop:products' %}" style="text-decoration: none !important;">Szúrök eltávolítása</a></button>
                 </div>
             </form>
+            </div>
         </div>
-        <div class="col-md-9">
+        <div class="col-md-9" id="products_list">
             <div id="products-container" class="row">
                 {% for product in page_obj %}
                 <div class="col-lg-3 col-md-3 col-sm-6 mb-2 d-flex" data-product-id="{{ product.id }}">
@@ -142,8 +159,8 @@
                 </div>
                 {% endfor %}
             </div>
-<nav aria-label="Page navigation example">
-    <ul class="pagination justify-content-center flex-wrap">
+    <nav aria-label="Page navigation example">
+    <ul class="pagination pagination-lg justify-content-center flex-wrap">
         <!-- Előző oldal gomb -->
         {% if page_obj.has_previous %}
         <li class="page-item">
@@ -208,8 +225,50 @@
             // Inicializálja a megjelenítést az oldal betöltésekor
             updatePriceDisplay();
         });
+        document.addEventListener("DOMContentLoaded", function() {
+        const toggleButton = document.getElementById("toggleFilters");
+        const filterPanel = document.getElementById("filterCollapse");
+    });
+
+    function hidden_filters_onclick() {
+        var sidebar_card = document.getElementById("sidebar-card");
+        var sidebar = document.getElementById("sidebar-container");
+        var toggleButton = document.getElementById("toggle-filters-btn");
+        var products_list = document.getElementById("products_list");
+        var right_arrow = document.getElementById("right_arrow");
+        var left_arrow = document.getElementById("left_arrow");
+        // Oldalsáv megjelenítés/elrejtés
+        if (sidebar.style.display === "none" || sidebar.style.display === "") {
+            console.log('none');
+            sidebar.style.display = "block";
+            right_arrow.style.display = "none";
+            left_arrow.style.display = "block";
+            sidebar_card.classList.remove("col-md-1");
+            sidebar_card.classList.add("col-md-3");
+            products_list.classList.remove("col-md-11");
+            products_list.classList.add("col-md-9");
+        } else {
+            console.log('block');
+            sidebar.style.display = "none";
+            left_arrow.style.display = "none";
+            right_arrow.style.display = "block";
+            sidebar_card.classList.remove("col-md-3");
+            sidebar_card.classList.add("col-md-1");
+            products_list.classList.remove("col-md-9");
+            products_list.classList.add("col-md-11");
+        }
+    }
+
+
     </script>
         
         
-        
+        <style>
+/* Opcionális stílusok */
+.btn[aria-expanded="true"] #collapseIcon {
+    transform: rotate(180deg);
+    display: inline-block;
+    transition: transform 0.3s ease;
+}
+</style>
 {% endblock %}

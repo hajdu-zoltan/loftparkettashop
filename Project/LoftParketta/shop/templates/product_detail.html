@@ -30,6 +30,12 @@
         });
     });
 </script>
+<!-- Értesítési div -->
+<div id="cart-toast" class="toast position-fixed top-10 end-0 m-3 bg-info text-white" role="alert" aria-live="assertive" aria-atomic="true" style="z-index: 10000; display: none;">
+    <div class="toast-body">
+        ✅ Termék hozzáadva a kosárhoz!
+    </div>
+</div>
 <div class="container mt-5">
     <!-- Fő termék részletei -->
     <div class="row product-detail-card">
@@ -202,6 +208,12 @@
 </script>
 <script>
 function addToCart(productId) {
+    var toast = document.getElementById("cart-toast");
+    toast.style.display = "block";
+
+    setTimeout(function () {
+        toast.style.display = "none";
+    }, 4000); // 4 másodperc múlva eltűnik
     var form = document.getElementById('add-to-cart-form-' + productId);
     var url = form.action;  // Az URL-t a form action attribútumából kapjuk
     var formData = new FormData(form);
@@ -222,6 +234,12 @@ function addToCart(productId) {
     .catch(error => {
         console.error('Error:', error);
     });
+    var toast = document.getElementById("cart-toast");
+    toast.style.display = "block";
+
+    setTimeout(function () {
+        toast.style.display = "none";
+    }, 2000); // 2 másodperc múlva eltűnik
 }
 
 function updateCartCount(cart_count) {
