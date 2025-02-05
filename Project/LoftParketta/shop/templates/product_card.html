@@ -4,7 +4,7 @@
 
 <div class="card card-product">
     {% if product.stock > 0 %}
-        <div class="ribbon m-2 rounded-pill bg-success">Készleten</div>
+        <div class="ribbon m-2 rounded-pill bg-success" style="z-index:100;">Készleten</div>
     {% endif %}
     {% if product.is_discounted %}
     <div class="badge-discount">-{{ product.discount_rate|floatformat:0  }}%</div>
@@ -13,9 +13,9 @@
         <div class="product-image m-3">
              <div class="img_body">
             {% if product.image %}
-            <img src="{{ product.image.thumbnail.500x500 }}" />
+            <img src="{{ product.image.thumbnail.500x500 }}" loading="lazy" />
             {% else %}
-            <img src="{% static 'images/placeholder.png' %}" alt="Placeholder Image">
+            <img src="{% static 'images/placeholder.png' %}" loading="lazy" alt="Placeholder Image">
             {% endif %}
              </div>
         </div>

@@ -41,7 +41,7 @@ class ProductAdmin(admin.ModelAdmin):
             "fields": ("name", "description", "sort_description", "category", "brand")
         }),
         ("Árazás", {
-            "fields": ("price", "is_discounted", "discount_rate")
+            "fields": ("price", "is_discounted", "discount_rate", "popularity")
         }),
         ("Média", {
             "fields": ("image", "link")
