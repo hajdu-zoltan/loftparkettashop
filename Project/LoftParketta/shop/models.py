@@ -29,12 +29,18 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
+class Unit(models.Model):
+    name = models.CharField("Név", max_length=100)
 
+    def __str__(self):
+        return self.name
 class Product(models.Model):
     name = models.CharField("Név", max_length=100)
     price = models.DecimalField("Ár", max_digits=10, decimal_places=2)
+    unit = models.ForeignKey('Unit', verbose_name="Egység", on_delete=models.SET_NULL, null=True, blank=True)
     description = RichTextField("Leírás", null=True, blank=True)
     sort_description = RichTextField("Rövid leírás", null=True, blank=True)
+    comment = RichTextField("Megjegyzés", null=True, blank=True)
     is_discounted = models.BooleanField("Akciós", default=False)
     discount_rate = models.DecimalField("Kedvezmény mértéke", max_digits=5, decimal_places=2, default=0.00)
     category = models.ForeignKey('Category', verbose_name="Kategória", on_delete=models.SET_NULL, null=True, blank=True)
@@ -53,8 +59,19 @@ class Product(models.Model):
         verbose_name = "Termék"
         verbose_name_plural = "Termékek"
 
+    def primary_image(self):
+        return self.images.first().image.url if self.images.exists() else None
     def __str__(self):
         return self.name
+
+class ProductImage(models.Model):
+    product = models.ForeignKey('Product', on_delete=models.CASCADE, related_name='images')
+    image = VersatileImageField("Kép", upload_to='product_images/')
+    alt_text = models.CharField("Alternatív szöveg", max_length=255, blank=True)
+
+    def __str__(self):
+        return f"Kép: {self.product.name}"
+
 class News(models.Model):
     title = models.CharField('Cím', max_length=200)
     content = models.TextField('Termék', null=True, blank=True)

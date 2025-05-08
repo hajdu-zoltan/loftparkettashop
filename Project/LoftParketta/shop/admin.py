@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Brand, Category, Product, News, ShippingAddress, Order, OrderItem, Document
+from .models import Brand, Category, Product, News, ShippingAddress, Order, OrderItem, Document, Unit, ProductImage
 
 # Az OrderItem-ek inline megjelenítése az Order admin felületén
 class OrderItemInline(admin.TabularInline):
@@ -27,21 +27,24 @@ class OrderAdmin(admin.ModelAdmin):
     shipping_address_display.short_description = 'Shipping Address'
 
 # A többi modell regisztrálása az admin felületre
+class ProductImageInline(admin.TabularInline):
+    model = ProductImage
+    extra = 1
 class ProductAdmin(admin.ModelAdmin):
     list_display = ("name", "price", "stock", "is_active")
     list_filter = ("is_active", "is_discounted", "category", "brand")
     search_fields = ("name", "description")
     ordering = ("name",)
-
+    inlines = [ProductImageInline]
     fieldsets = (
         ("Készlet", {
-            "fields": ("stock", "is_active")
+            "fields": ("stock", "is_active", "comment")
         }),
         ("Általános információk", {
             "fields": ("name", "description", "sort_description", "category", "brand")
         }),
         ("Árazás", {
-            "fields": ("price", "is_discounted", "discount_rate", "popularity")
+            "fields": ("price", "unit", "is_discounted", "discount_rate", "popularity")
         }),
         ("Média", {
             "fields": ("image", "link")
@@ -51,6 +54,7 @@ class ProductAdmin(admin.ModelAdmin):
 
 admin.site.register(Brand)
 admin.site.register(Category)
+admin.site.register(Unit)
 admin.site.register(Product, ProductAdmin)
 admin.site.register(News)
 admin.site.register(ShippingAddress)

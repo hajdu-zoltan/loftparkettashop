@@ -78,6 +78,7 @@ def product_list(request):
                 'id': product.id,
                 'name': product.name,
                 'price': float(product.price),
+                'unit': product.unit.name,
                 'discount_rate': float(product.discount_rate),
                 'discounted_price': float(product.price * (1 - (product.discount_rate / 100))),
                 'image_url': product.image.url if product.image else '',

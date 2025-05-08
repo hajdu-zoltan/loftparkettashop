@@ -13,7 +13,7 @@
         <div class="product-image m-3">
              <div class="img_body">
             {% if product.image %}
-            <img src="{{ product.image.thumbnail.500x500 }}" loading="lazy" />
+            <img src="{{ product.image.thumbnail.300x300 }}" loading="lazy" />
             {% else %}
             <img src="{% static 'images/placeholder.png' %}" loading="lazy" alt="Placeholder Image">
             {% endif %}
@@ -26,10 +26,13 @@
             <div class="price-container mt-auto">
                 <p class="card-text price-info">
                     {% if product.is_discounted %}
-                    <span class="text-muted"><del>{{ product.price|floatformat:0 }} Ft</del></span><br>
-                    <span class="text-danger price-info-new">{{ product.discounted_price|floatformat:0 }} Ft</span>
+                        <span class="text-muted"><del>{{ product.price|floatformat:0 }} Ft</del></span><br>
+                        <span class="text-danger price-info-new">{{ product.discounted_price|floatformat:0 }} Ft</span>
                     {% else %}
-                    <span class="text-danger price-info-new">{{ product.price|floatformat:0 }} Ft</span>
+                        <span class="text-danger price-info-new">{{ product.price|floatformat:0 }} Ft</span>
+                    {% endif %}
+                    {% if product.unit is not None %}
+                        <span class="text-danger">/{{ product.unit}}</span>
                     {% endif %}
                 </p>
             </div>

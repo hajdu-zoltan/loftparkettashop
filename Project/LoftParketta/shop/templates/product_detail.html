@@ -41,11 +41,33 @@
     <div class="row product-detail-card">
         <!-- Termék kép -->
         <div class="col-md-6">
-            <div class="position-relative product-image border border-2 border-secondary">
-                <img src="{{ product.image.thumbnail.500x500 }}" alt="{{ product.name }}" class="product-image-card">
-                {% if product.is_discounted %}
-                <span class="badge badge-discount">-{{ product.discount_rate|floatformat:0  }}%</span>
-                {% endif %}
+            <div class="position-relative product-image">
+                 <!-- Swiper nagy képek -->
+                <div style="--swiper-navigation-color: #fff; --swiper-pagination-color: #fff" class="swiper mySwiper2 mb-3">
+                  <div class="swiper-wrapper">
+                    {% for image in product.images.all %}
+                      <div class="swiper-slide">
+                        <img src="{{ image.image.thumbnail.500x500 }}" alt="{{ image.alt_text }}">
+                      </div>
+                    {% empty %}
+                        <img src="{{ product.image.thumbnail.500x500 }}" alt="{{ image.alt_text }}">
+                    {% endfor %}
+                  </div>
+                  <div class="swiper-button-next"></div>
+                  <div class="swiper-button-prev"></div>
+                </div>
+
+                <!-- Swiper thumbnail képek -->
+                <div thumbsSlider="" class="swiper mySwiper">
+                  <div class="swiper-wrapper">
+                    {% for image in product.images.all %}
+                      <div class="swiper-slide">
+                        <img src="{{ image.image.thumbnail.100x100 }}" alt="{{ image.alt_text }}">
+                      </div>
+                    {% endfor %}
+                  </div>
+                </div>
+
             </div>
 <!--            <div class="mt-3">-->
 <!--                <div class="d-flex justify-content-center">-->
@@ -265,6 +287,29 @@ function getCookie(name) {
 }
 
 
+</script>
+<!-- Swiper JS -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+<script>
+  var swiperThumbs = new Swiper(".mySwiper", {
+    loop: true,
+    spaceBetween: 10,
+    slidesPerView: 4,
+    freeMode: true,
+    watchSlidesProgress: true,
+  });
+  var swiperMain = new Swiper(".mySwiper2", {
+    loop: true,
+    spaceBetween: 10,
+    navigation: {
+      nextEl: ".swiper-button-next",
+      prevEl: ".swiper-button-prev",
+    },
+    thumbs: {
+      swiper: swiperThumbs,
+    },
+  });
 </script>
 
 {% endblock %}

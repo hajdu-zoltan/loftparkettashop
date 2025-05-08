@@ -18,7 +18,7 @@
                     -{{ product.discount_rate|floatformat:0 }}%
                 </div>
                 {% endif %}
-                <img src="{{ product.image.thumbnail.500x500 }}" loading="lazy" class="card-img-top" alt="{{ product.name }}">
+                <img src="{{ product.image.thumbnail.300x300 }}" loading="lazy" class="card-img-top" alt="{{ product.name }}">
                 <div class="card-body d-flex flex-column">
                     <a class="nav-link" href="{% url 'shop:product_detail' product.id %}">
                         <h5 class="card-title">{{ product.name }}</h5>
