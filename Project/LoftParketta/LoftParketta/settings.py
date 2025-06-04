@@ -182,7 +182,7 @@ SILENCED_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error']
 
 # További beállítások, ha szükséges
 SITE_ID = 1
-SITE_URL = 'http://127.0.0.1:8080'
+SITE_URL = 'http://127.0.0.1:8000'
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / "static"]
 MEDIA_URL = '/media/'

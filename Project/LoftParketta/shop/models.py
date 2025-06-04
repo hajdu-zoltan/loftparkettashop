@@ -163,6 +163,7 @@ class Order(models.Model):
     created_at = models.DateTimeField("Létrehozva", auto_now_add=True)
     updated_at = models.DateTimeField("Frissítve", auto_now=True)
 
+    status_url = models.URLField('Státusz URL', max_length=500, null=True, blank=True)
     def get_order_items(self):
         return OrderItem.objects.filter(order=self)
 

@@ -9,7 +9,7 @@ class OrderItemInline(admin.TabularInline):
 
 # Az Order admin felületének testreszabása
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'total_amount', 'status', 'shipping_address', 'order_date')
+    list_display = ('id', 'user', 'total_amount', 'status', 'shipping_address', 'order_date', 'status_url')
     list_filter = ('status', 'order_date', 'payment_method')
     search_fields = ('user__username', 'guest_user_id', 'shipping_address__recipient_name')
     readonly_fields = ('order_date', 'total_amount', 'payment_method', 'shipping_address_display')  # 'status' már nem readonly

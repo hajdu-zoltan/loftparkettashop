@@ -13,13 +13,15 @@ urlpatterns = [
     path('quote-request/', views.QuoteRequestView.as_view(), name='quote_request'),
     path('payment/', views.payment_view, name='payment'),
     path('success/', views.success_view, name='success_page'),
-    path('order-status/<int:order_id>/<str:guest_user_id>/', views.order_status_guest_view, name='order_status_guest'),
-    path('order-status/<int:order_id>/', views.order_status, name='order_status'),
+    path('order-status/<uuid:code>/', views.order_status, name='order_status_uuid'),
+    path('order-status/<uuid:code>/<str:guest_user_id>/', views.order_status, name='order_status_guest'),
+
     path('payment/start/', views.StartPaymentView.as_view(), name='start_payment'),
     path('payment/callback/', views.payment_callback, name='payment_callback'),
     path('payment/success/', views.payment_success, name='payment_success'),
     path("barionafter", views.barion_after, name="barion_after"),
     path("payment_status/<str:payment_id>/", views.payment_status, name="payment_status"),
+
     path("barionipn", views.barion_ipn, name="barion_ipn"),
     path("checkvat", views.check_vat, name="check_vat"),
 

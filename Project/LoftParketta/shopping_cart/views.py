@@ -560,10 +560,16 @@ def payment_view(request):
                     billing_country=billing_country,
                     is_company=is_company,
                     company_name=company_name,
-                    tax_number=tax_number,
-
+                    tax_number=tax_number
                 )
+                if order.guest_user_id:
+                    status_url = f"{settings.SITE_URL}{reverse('shopping_cart:order_status_guest', args=[order.code, order.guest_user_id])}"
+                else:
+                    status_url = f"{settings.SITE_URL}{reverse('shopping_cart:order_status_uuid', args=[order.code])}"
 
+                # Mentés az új URL-lel
+                order.status_url = status_url
+                order.save()
                 if payment_method == 'credit_card':
                     gateway_url, payment_id = create_payment(request, user, cart_items, order)
                     if not (gateway_url and payment_id):
@@ -655,29 +661,26 @@ def payment_view(request):
                     request.session['cart'] = {}  # Teljesen töröljük a kosár tartalmát
 
                 # Email küldés
-                if order.guest_user_id:
-                    status_url = f"{settings.SITE_URL}{reverse('shopping_cart:order_status_guest', args=[order.id, order.guest_user_id])}"
-                else:
-                    status_url = f"{settings.SITE_URL}{reverse('shopping_cart:order_status', args=[order.id])}"
 
-                cart_items = OrderItem.objects.filter(order=order)
-
-                # Email sablon renderelése a változókkal
-                message_to_user = render_to_string('order_status_email.html', {
-                    'username': order.user.username if order.user else 'Vendég',  # Ha vendég a felhasználó
-                    'order': order,
-                    'cart_items': cart_items,  # Kosár tartalmának átadása
-                    'status_url': status_url  # URL átadása az email sablonnak
-                })
-
-                # Email küldés beállítása
-                email_to_user = EmailMessage(
-                    'Rendelés állapota frissítve',
-                    message_to_user,
-                    to=[billing_email],  # Címzett email cím
-                )
-                email_to_user.content_subtype = 'html'  # HTML formátum
-                email_to_user.send()
+                #
+                # cart_items = OrderItem.objects.filter(order=order)
+                #
+                # # Email sablon renderelése a változókkal
+                # message_to_user = render_to_string('order_status_email.html', {
+                #     'username': order.user.username if order.user else 'Vendég',  # Ha vendég a felhasználó
+                #     'order': order,
+                #     'cart_items': cart_items,  # Kosár tartalmának átadása
+                #     'status_url': status_url  # URL átadása az email sablonnak
+                # })
+                #
+                # # Email küldés beállítása
+                # email_to_user = EmailMessage(
+                #     'Rendelés állapota frissítve',
+                #     message_to_user,
+                #     to=[billing_email],  # Címzett email cím
+                # )
+                # email_to_user.content_subtype = 'html'  # HTML formátum
+                # email_to_user.send()
 
                 #create_invoice(order)
 
@@ -803,18 +806,15 @@ def success_view(request):
     return render(request, 'success.html')
 
 
-def order_status(request, order_id, guest_user_id=None):
-    # A rendelés lekérdezése az ID és a guest_user_id alapján (ha vendégfelhasználó)
+def order_status(request, code, guest_user_id=None):
     if guest_user_id:
-        order = get_object_or_404(Order, id=order_id, guest_user_id=guest_user_id)
+        order = get_object_or_404(Order, code=code, guest_user_id=guest_user_id)
     else:
-        order = get_object_or_404(Order, id=order_id, user=request.user)
+        if not request.user.is_authenticated:
+            return redirect('account_login')
+        order = get_object_or_404(Order, code=code, user=request.user)
 
-    context = {
-        'order': order
-    }
-    return render(request, 'order_status.html', context)
-
+    return render(request, 'order_status.html', {'order': order})
 def order_status_guest_view(request, order_id, guest_user_id):
     order = get_object_or_404(Order, id=order_id, guest_user_id=guest_user_id)
     return render(request, 'order_status.html', {'order': order})
