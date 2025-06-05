@@ -9,13 +9,13 @@
     <p><strong>Összeg:</strong> {{ order.total_amount | floatformat:0 }} Ft</p>
 
     <p><strong>Szállítási cím:</strong> {{ order.shipping_address.recipient_name }}, {{ order.shipping_address.address_line1 }}, {{ order.shipping_address.city }}, {{ order.shipping_address.postal_code }}, {{ order.shipping_address.country }}</p>
-    <p><strong>Szállítási mód:</strong> {{ order.shipping_method }}</p>
-    <h3>Kosár tartalma:</h3>
-    <ul>
-        {% for item in cart_items %}
-            <li>{{ item.product.name }} - Mennyiség: {{ item.quantity }} - Ár: {{ item.total_price| floatformat:0 }} HUF</li>
-        {% endfor %}
-    </ul>
+    <p><strong>Szállítási mód:</strong> {{ order.get_shipping_method_display  }}</p>
+<!--    <h3>Kosár tartalma:</h3>-->
+<!--    <ul>-->
+<!--        {% for item in cart_items %}-->
+<!--            <li>{{ item.product.name }} - Mennyiség: {{ item.quantity }} - Ár: {{ item.total_price| floatformat:0 }} HUF</li>-->
+<!--        {% endfor %}-->
+<!--    </ul>-->
 
     <p>A rendelésed állapotát itt tudod megtekinteni: <a href="{{ status_url }}">Rendelés státuszának megtekintése</a></p>
 

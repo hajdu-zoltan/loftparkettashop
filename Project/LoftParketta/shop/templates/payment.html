@@ -160,7 +160,7 @@
                     <div class="form-group col-md-12">
                         <label for="shipping_method">Szállítási mód:</label>
                         <select id="shipping_method" name="shipping_method" onchange="handleOptionChange()" class="form-control" required>
-                            <option disabled="disabled" id="free_shipping" value="free_shipping">Ingyenes szállítás Szegeden belül 50.000 Ft feletti vásárlás esetén.</option>
+                            <option disabled="disabled" id="free_shipping" value="free_shipping">Ingyenes szállítás Szegeden belül 100.000 Ft feletti vásárlás esetén.</option>
                             <option disabled="disabled" id="home_delivery" value="home_delivery">Házhoz szállítás Szegeden 10.000Ft</option>
                             <option value="store_pickup">Boltban történő átvétel</option>
                         </select>
@@ -262,7 +262,7 @@
           const shipping_postal_code = document.getElementById("shipping_postal_code").value; // Az input mező aktuális értéke
           if(shipping_postal_code >= 6700 && shipping_postal_code <= 6791)
           {
-            if({{total_price  | floatformat:0}} >= 50000)
+            if({{total_price  | floatformat:0}} >= 100000)
             {
                 document.getElementById("free_shipping").disabled = false;
             }
