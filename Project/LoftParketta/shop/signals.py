@@ -4,12 +4,13 @@ from shop.models import Order, OrderItem, ShippingAddress
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
-
+from django.conf import settings
 
 @receiver(pre_save, sender=Order)
 def send_status_change_email(sender, instance, **kwargs):
     if not instance.pk:
         # Új rendelés, nincs státuszváltozás
+
         return
 
     else:

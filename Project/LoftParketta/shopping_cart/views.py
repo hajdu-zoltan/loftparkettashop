@@ -570,6 +570,22 @@ def payment_view(request):
                 # Mentés az új URL-lel
                 order.status_url = status_url
                 order.save()
+
+                admin_link = f"{settings.SITE_URL}/admin/shop/order/{order.id}/change/"
+                message_to_user = render_to_string('order_admin_notification.html', {
+                    'username': order.user.username if order.user else 'Vendég',  # Ha vendég a felhasználó
+                    'order': order,
+                    'cart_items': None,  # Kosár tartalmának átadása
+                    'status_url': order.status_url,  # URL átadása az email sablonnak
+                    'admin_url': admin_link
+                })
+                email_to_user = EmailMessage(
+                    f'Új Rendelés{order.id}',
+                    message_to_user,
+                    to=["info@loftparketta.hu"],  # Címzett email cím
+                )
+                email_to_user.content_subtype = 'html'  # HTML formátum
+                email_to_user.send()
                 if payment_method == 'credit_card':
                     gateway_url, payment_id = create_payment(request, user, cart_items, order)
                     if not (gateway_url and payment_id):

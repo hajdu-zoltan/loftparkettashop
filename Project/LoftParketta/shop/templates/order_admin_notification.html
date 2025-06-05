@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Új Rendelés({{order.billing_first_name}} {{order.billing_last_name}})</h1>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Rendelés azonosító: <span class="text-primary">{{ order.id }}</span></h5>
+            <p class="card-text">
+                Felhasználó: <strong>{% if order.user %} {{ order.user.username }} {% else %} Vendég {% endif %}</strong>
+            </p>
+            <p class="card-text">
+                Státusz: <strong>{{ order.get_status_display }}</strong>
+            </p>
+            <p class="card-text">
+                Rendelés: <strong>{{ admin_url }}</strong>
+            </p>
+            <p class="card-text">
+                Teljes összeg: <strong>{{ order.total_amount | floatformat:0 }} Ft</strong>
+            </p>
+            <p class="card-text">
+                Fizetési mód: <strong>{{ order.get_payment_method_display }}</strong>
+            </p>
+            <p class="card-text">
+                Szállítási cím: <strong>{{ order.shipping_address.recipient_name }}, {{ order.shipping_address.address_line1 }}, {{ order.shipping_address.city }}, {{ order.shipping_address.postal_code }}, {{ order.shipping_address.country }}</strong>
+            </p>
+<!--            <p class="card-text">-->
+<!--                Szállítási mód: <strong>{{ order.shipping_method }}</strong>-->
+<!--            </p>-->
+        </div>
+    </div>
+
+    <h3 class="mb-4">Rendelési tételek</h3>
+    <table class="table table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th>Termék neve</th>
+                <th>Mennyiség</th>
+                <th>Egységár</th>
+                <th>Teljes ár</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in order.get_order_items %}
+            <tr>
+                <td> <a class="nav-link" href="{% url 'shop:product_detail' item.product.id %}">{{ item.product.name }}</a></td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.unit_price | floatformat:0 }} Ft</td>
+                <td>{{ item.total_price | floatformat:0 }} Ft</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" class="text-center">Nincsenek tételek a rendeléshez.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
